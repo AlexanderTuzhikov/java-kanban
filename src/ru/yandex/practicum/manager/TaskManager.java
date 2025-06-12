@@ -43,16 +43,13 @@ public class TaskManager {
     }
 
     public ArrayList<Task> getAllTask() {
-        ArrayList<Task> tasks = new ArrayList<>(taskList.values());
-        return tasks;
+        return new ArrayList<>(taskList.values());
     }
     public ArrayList<Subtask> getAllSubtaskTask() {
-        ArrayList<Subtask> subTasks = new ArrayList<>(subtaskList.values());
-        return subTasks;
+        return new ArrayList<>(subtaskList.values());
     }
     public ArrayList<Epic> getAllEpic() {
-        ArrayList<Epic> epics = new ArrayList<>(epicList.values());
-        return epics;
+        return new ArrayList<>(epicList.values());
     }
 
     public Task getTaskById(int id) {
