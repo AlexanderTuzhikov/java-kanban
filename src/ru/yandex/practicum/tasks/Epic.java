@@ -18,6 +18,18 @@ public class Epic extends Task {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Epic epic)) return false;
+        if (!super.equals(o)) return false;
+        return Objects.equals(subtaskForEpic, epic.subtaskForEpic);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtaskForEpic);
+    }
+
+    @Override
     public String toString() {
         return "Epic{" +
                 "taskName='" + getTaskName() + '\'' +
