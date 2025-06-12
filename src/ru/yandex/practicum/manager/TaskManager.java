@@ -46,8 +46,9 @@ public class TaskManager {
         ArrayList<Task> tasks = new ArrayList<>(taskList.values());
         return tasks;
     }
-    public HashMap<Integer, Subtask> getAllSubtaskTask() {
-        return subtaskList;
+    public ArrayList<Subtask> getAllSubtaskTask() {
+        ArrayList<Subtask> subTasks = new ArrayList<>(subtaskList.values());
+        return subTasks;
     }
     public HashMap<Integer, Epic> getAllEpic() {
         return epicList;
