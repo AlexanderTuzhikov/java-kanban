@@ -34,6 +34,6 @@ public class Subtask extends Task {
                 ", taskId=" + getTaskId() +
                 ", status=" + getStatus() +
                 ", epicId=" + epicId +
-                '}';
+                "}\n";
     }
 }
