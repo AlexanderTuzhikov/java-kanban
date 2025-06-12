@@ -1,3 +1,7 @@
+package ru.yandex.practicum.tasks;
+
+import java.util.Objects;
+
 public class Subtask extends Task {
     private final int epicId;
 
