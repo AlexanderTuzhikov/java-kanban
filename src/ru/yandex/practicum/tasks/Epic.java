@@ -1,6 +1,7 @@
 package ru.yandex.practicum.tasks;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Epic extends Task {
     private final HashMap<Integer, Subtask> subtaskForEpic = new HashMap<>();
