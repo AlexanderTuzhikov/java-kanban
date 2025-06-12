@@ -89,8 +89,9 @@ public class TaskManager {
                 statusDone++;
             }
         }
-
-        if (statusDone == getAllEpicSubtask(epic).size()) {
+        if (getAllEpicSubtask(epic).isEmpty()) {
+        epic.setStatus(TaskStatus.NEW);
+        } else if (statusDone == getAllEpicSubtask(epic).size()) {
             epic.setStatus(TaskStatus.DONE);
         } else if (statusInProgress > 0
                 || statusDone > 0) {
