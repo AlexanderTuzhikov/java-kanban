@@ -50,8 +50,9 @@ public class TaskManager {
         ArrayList<Subtask> subTasks = new ArrayList<>(subtaskList.values());
         return subTasks;
     }
-    public HashMap<Integer, Epic> getAllEpic() {
-        return epicList;
+    public ArrayList<Epic> getAllEpic() {
+        ArrayList<Epic> epics = new ArrayList<>(epicList.values());
+        return epics;
     }
 
     public Task getTaskById(int id) {
