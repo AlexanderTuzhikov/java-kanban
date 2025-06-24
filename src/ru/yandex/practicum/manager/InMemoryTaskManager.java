@@ -6,7 +6,10 @@ import ru.yandex.practicum.util.Managers;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-public class TaskManager {
+public class InMemoryTaskManager implements TaskManager {
+
+    HistoryManager historyManager = Managers.getDefaultHistory();
+
     private final HashMap<Integer, Task> taskList = new HashMap<>();
     private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
     private final HashMap<Integer, Epic> epicList = new HashMap<>();
@@ -50,13 +53,28 @@ public class TaskManager {
         return new ArrayList<>(epicList.values());
     }
 
+    @Override
     public Task getTaskById(int id) {
+        Task task = taskList.get(id);
+        Task taskVersion = new Task(task.getTaskId(), task.getTaskName(), task.getTaskInfo());
+        taskVersion.setStatus(task.getStatus());
+        historyManager.updateHistory(taskVersion);
         return taskList.get(id);
     }
+    @Override
     public Subtask getSubtaskById(int id) {
+        Subtask subtask = subtaskList.get(id);
+        Subtask subtaskVersion = new Subtask(subtask.getTaskId(), subtask.getTaskName(), subtask.getTaskInfo(), subtask.getEpicId());
+        subtaskVersion.setStatus(subtask.getStatus());
+        historyManager.updateHistory(subtaskVersion);
         return subtaskList.get(id);
     }
+    @Override
     public Epic getEpicById(int id) {
+        Epic epic = epicList.get(id);
+        Epic epicVersion = new Epic(epic.getTaskId(), epic.getTaskName(), epic.getTaskInfo());
+        epicVersion.setStatus(epic.getStatus());
+        historyManager.updateHistory(epicVersion);
         return epicList.get(id);
     }
 
