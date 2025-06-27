@@ -8,12 +8,12 @@ import ru.yandex.practicum.util.Managers;
 
 public class Main {
     public static void main(String[] args) {
+
         //Проверяем выводы программы
         TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
 
         //Создаем задачи
-
         taskManager.createNewTask("Test name1","Test info1");
         taskManager.createNewTask("Test name2","Test info2");
         taskManager.createNewTask("Test name3","Test info3");
@@ -26,6 +26,7 @@ public class Main {
         taskManager.createNewSubtask("Test name8","Test info8",4);
         taskManager.createNewSubtask("Test name9","Test info9",5);
 
+        //Выводим все задачи
         System.out.println("\t\t\tВсе задачи: \n"  + taskManager.getAllTask());
 
         System.out.println("\t\t\tВсе Epic с их подзадачами: \n");
@@ -40,6 +41,7 @@ public class Main {
         taskManager.updateSubtask(taskManager.getSubtaskById(7), TaskStatus.IN_PROGRESS);
         taskManager.updateSubtask(taskManager.getSubtaskById(9), TaskStatus.DONE);
 
+        //Выводим задачи с измененным статусом
         System.out.println("\t\t\tСтатус изменен: \n" + taskManager.getTaskById(1));
         System.out.println("\t\t\tСтатус изменен: \n" + taskManager.getSubtaskById(7));
         System.out.println("\t\t\tСтатус изменен у Epic: \n" + taskManager.getEpicById(4));
@@ -47,14 +49,15 @@ public class Main {
         System.out.println("\t\t\tСтатус изменен у Epic: \n" + taskManager.getEpicById(5));
 
         //Получаем историю последних 10 просмотров
-
         System.out.println("\t\t\tИстория последних 10 просмотров задач: \n" +
                 historyManager.getHistory());
 
+        //Добавляем 3 просмотра
         taskManager.getTaskById(1);
         taskManager.getSubtaskById(8);
         taskManager.getEpicById(6);
 
+        //Получаем историю последних просмотров
         System.out.println("\t\t\tИстория последних 10 просмотров задач: \n" +
                 historyManager.getHistory());
 

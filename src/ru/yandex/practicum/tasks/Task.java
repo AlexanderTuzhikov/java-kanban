@@ -44,7 +44,10 @@ public class Task {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Task task)) return false;
-        return taskId == task.taskId && Objects.equals(taskName, task.taskName) && Objects.equals(taskInfo, task.taskInfo) && status == task.status;
+        return taskId == task.taskId
+                && Objects.equals(taskName, task.taskName)
+                && Objects.equals(taskInfo, task.taskInfo)
+                && status == task.status;
     }
 
     @Override
@@ -62,6 +65,3 @@ public class Task {
                 "}\n";
     }
 }
-
-
-

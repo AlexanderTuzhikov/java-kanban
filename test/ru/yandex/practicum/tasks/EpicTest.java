@@ -1,61 +1,97 @@
 package ru.yandex.practicum.tasks;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.util.Stubs;
 
 import static org.testng.Assert.*;
 
 class EpicTest {
 
-    Epic testEpic1 = new Epic(1, "testName1", "TestInfo1");
-    Epic testEpic2 = new Epic(1, "testName2", "TestInfo2");
-    Epic testEpic3 = new Epic(3, "testName3", "TestInfo3");
-
+    @DisplayName("При создании задач конструктор присваивает верные значения полям")
     @Test
-    void epicFieldsAreInitializedCorrectly() {
-        assertEquals(testEpic1.getTaskId(), 1,
+    void test_Epic_Fields_Are_Initialized_Correctly_Test() {
+        //Given
+        int TEST_EPIC_ID = 1;
+        String TASK_NAME_TEST = "testName1";
+        String TEST_TASK_INFO = "TestInfo1";
+
+        //When
+        int EPIC_ID = Stubs.testEpic1.getTaskId();
+        String TASK_NAME = Stubs.testEpic1.getTaskName();
+        String TASK_INFO = Stubs.testEpic1.getTaskInfo();
+
+        //Then
+        assertEquals(EPIC_ID, TEST_EPIC_ID,
                 "ID задачи не верен");
-        assertEquals(testEpic1.getTaskName(), "testName1",
+        assertEquals(TASK_NAME, TASK_NAME_TEST,
                 "Имя задачи не верно");
-        assertEquals(testEpic1.getTaskInfo(), "TestInfo1",
+        assertEquals( TASK_INFO, TEST_TASK_INFO,
                 "Информация о задаче не верна");
     }
 
+    @DisplayName("Метод изменения статуса задач работает корректно")
     @Test
-    void setStatusCorrectly() {
-        testEpic2.setStatus(TaskStatus.IN_PROGRESS);
+    void test_Set_Status_Correctly_Test() {
+        //Given
+        TaskStatus TEST_TASK_STATUS = TaskStatus.IN_PROGRESS;
 
-        assertEquals(testEpic2.getStatus(), TaskStatus.IN_PROGRESS,
+        //When
+        Stubs.testEpic2.setStatus(TaskStatus.IN_PROGRESS);
+
+        //Then
+        assertEquals(Stubs.testEpic2.getStatus(), TEST_TASK_STATUS,
                 "Установка статуса работает не корректно");
     }
 
+    @DisplayName("Методы изменения имени и дополнительной информации для задач работают корректно")
     @Test
-    void setNameAndSetInfoCorrectly() {
-        testEpic3.setTaskName("New Test Name");
-        testEpic3.setTaskInfo("New Test Info");
+    void test_Set_Name_And_Set_Info_Correctly_Test() {
+        //Given
+        String TEST_TASK_NAME = "New Test Name";
+        String TEST_TASK_INFO = "New Test Info";
 
-        assertEquals(testEpic3.getTaskName(),
-                "New Test Name", "Установка нового имени работает не корректно");
-        assertEquals(testEpic3.getTaskInfo(), "New Test Info",
+        //When
+        Stubs.testEpic3.setTaskName("New Test Name");
+        Stubs.testEpic3.setTaskInfo("New Test Info");
+
+        //Then
+        assertEquals(Stubs.testEpic3.getTaskName(), TEST_TASK_NAME
+                , "Установка нового имени работает не корректно");
+        assertEquals(Stubs.testEpic3.getTaskInfo(), TEST_TASK_INFO,
                 "Установка новой информации работает не корректно");
     }
 
+    @DisplayName("Задачи сравниваются по полям не по Hash Code")
     @Test
-    void identicalEpicsByFieldsAreComparedCorrectly() {
-        testEpic2.setTaskInfo(testEpic1.getTaskInfo());
-        testEpic2.setTaskName(testEpic1.getTaskName());
-        testEpic2.setStatus(testEpic1.getStatus());
+    void test_identical_Epics_By_Fields_Are_Compared_Correctly_Test() {
+        //Given
+        String TEST_TASK_INFO = Stubs.testEpic1.getTaskInfo();
+        String TEST_TASK_NAME = Stubs.testEpic1.getTaskName();
+        TaskStatus TEST_TASK_STATUS = Stubs.testEpic1.getStatus();
 
-        assertEquals(testEpic2, testEpic1,
+        //When
+        Stubs.testEpic2.setTaskInfo(TEST_TASK_INFO);
+        Stubs.testEpic2.setTaskName(TEST_TASK_NAME);
+        Stubs.testEpic2.setStatus(TEST_TASK_STATUS);
+
+        //Then
+        assertEquals(Stubs.testEpic2, Stubs.testEpic1,
                 "Задачи не равны");
     }
 
+    @DisplayName("Подзадача корректно добавляется к Epic")
     @Test
-    void setSubtaskForEpicCorrectly() {
-        Subtask testSubtask3 = new Subtask(
+    void test_set_Subtask_For_Epic_Correctly_Test() {
+        //Given
+        Subtask TEST_SUBTASK = new Subtask(
                 4, "testName3", "TestInfo3", 3);
-        testEpic3.setSubtaskForEpic(testSubtask3.getTaskId(), testSubtask3);
 
-        assertNotNull(testEpic3.getSubtaskForEpic(), "Подзадача не добавлена к Epic");
+        //When
+        Stubs.testEpic3.setSubtaskForEpic(TEST_SUBTASK.getTaskId(), TEST_SUBTASK);
+
+        //Then
+        assertNotNull(Stubs.testEpic3.getSubtaskForEpic(), "Подзадача не добавлена к Epic");
     }
 
 }

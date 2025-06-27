@@ -184,8 +184,5 @@ public class InMemoryTaskManager implements TaskManager {
         for (int idForRemove : idSubtaskForRemove) {
             subtaskList.remove(idForRemove);
         }
-
     }
-
 }
-

@@ -10,7 +10,6 @@ public class Epic extends Task {
         super(taskId, taskName, taskInfo);
     }
 
-
     public HashMap<Integer, Subtask> getSubtaskForEpic() {
         return subtaskForEpic;
     }
