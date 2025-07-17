@@ -1,6 +1,8 @@
 package ru.yandex.practicum.util;
 
 import org.junit.jupiter.api.DisplayName;
+import ru.yandex.practicum.manager.HistoryManager;
+import ru.yandex.practicum.manager.TaskManager;
 import ru.yandex.practicum.tasks.*;
 import org.junit.jupiter.api.Test;
 
@@ -31,26 +33,25 @@ class ManagersTest {
         assertNotNull(TEST_HISTORY_MANAGER, "Объект создан пустым!");
 
         //When
-        TEST_MANAGER.createNewTask("TEST_MANAGER name","TEST_MANAGER info");
+        TEST_MANAGER.createNewTask("TEST_MANAGER name", "TEST_MANAGER info");
 
         //Then
         assertNotNull(TEST_MANAGER.getAllTask(), "Задачи не добавляются");
 
         //When
-        Epic testEpic = TEST_MANAGER.createNewEpic("TEST_MANAGER name", "TEST_MANAGER info");
+        TEST_MANAGER.createNewEpic("TEST_MANAGER name", "TEST_MANAGER info");
 
         //Then
         assertNotNull(TEST_MANAGER.getAllEpic(), "Epic не добавляются");
 
         //When
-        int id = testEpic.getTaskId();
-        Epic epic = TEST_MANAGER.getEpicById(id);
+        Epic epic = TEST_MANAGER.getEpicById(2);
 
         //Then
-        assertEquals(epic.getTaskId(), id, "Метод получения ID задачи не работает");
+        assertEquals(epic.getTaskId(), 2, "Метод получения ID задачи не работает");
 
         //When
-        TEST_MANAGER.createNewSubtask("TEST_MANAGER name","TEST_MANAGER info", 2);
+        TEST_MANAGER.createNewSubtask("TEST_MANAGER name", "TEST_MANAGER info", 2);
 
         //Then
         assertNotNull(TEST_MANAGER.getAllSubtaskTask(), "Подзадачи не добавляются");
@@ -63,7 +64,7 @@ class ManagersTest {
         assertTrue(TEST_LIST_TASKS.isEmpty(), "Метод удаления всех задач не работает");
 
         //When
-        TEST_MANAGER.removeEpicById(3);
+        TEST_MANAGER.removeEpicById(2);
         TEST_LIST_EPIC = TEST_MANAGER.getAllEpic();
 
         //Then
@@ -71,10 +72,10 @@ class ManagersTest {
 
         //When
         TEST_LIST_SUBTASK = TEST_MANAGER.getAllSubtaskTask();
-        assertTrue(TEST_LIST_SUBTASK.isEmpty(),"Метод удаления Подзадач при удалении Epic не работает");
+        assertTrue(TEST_LIST_SUBTASK.isEmpty(), "Метод удаления Подзадач при удалении Epic не работает");
 
         //Then
-        assertNotNull(TEST_HISTORY_MANAGER.getHistory(),"История не сохраняется");
+        assertNotNull(TEST_HISTORY_MANAGER.getHistory(), "История не сохраняется");
     }
 
 }

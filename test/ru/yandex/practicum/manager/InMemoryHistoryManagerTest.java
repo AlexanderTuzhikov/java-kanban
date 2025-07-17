@@ -1,19 +1,8 @@
 package ru.yandex.practicum.manager;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.tasks.*;
-import ru.yandex.practicum.util.Managers;
-
-import java.util.List;
-
-import static org.testng.Assert.assertEquals;
-
 class InMemoryHistoryManagerTest {
-    TaskManager taskManagerTest;
-    HistoryManager historyManagerTest;
 
+<<<<<<< HEAD
     @DisplayName("Подготовка среды")
     @BeforeEach
     void setUp() {
@@ -28,7 +17,7 @@ class InMemoryHistoryManagerTest {
     void test_History_Work_Correctly_If_Get_Task_By_Id() {
         //Given
         final int TEST_LIST_SIZE = 1;
-        Task testTask = taskManagerTest.createNewTask("Test Name","Test Info");
+        Task testTask = taskManagerTest.createNewTask("Test Name", "Test Info");
         int id = testTask.getTaskId();
         List<Task> testHistory = historyManagerTest.getHistory();
 
@@ -37,7 +26,7 @@ class InMemoryHistoryManagerTest {
 
         //Then
         testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), 1,"История сохраняет 1 задачу");
+        assertEquals(testHistory.size(), 1, "История сохраняет 1 задачу");
         assertEquals(testHistory.get(0), testTask, "Сохранена верная задача");
     }
 
@@ -46,7 +35,7 @@ class InMemoryHistoryManagerTest {
     void test_History_Work_Correctly_If_Get_Task_By_Id_Again() {
         //Given
         final int TEST_LIST_SIZE = 1;
-        Task testTask = taskManagerTest.createNewTask("Test Name","Test Info");
+        Task testTask = taskManagerTest.createNewTask("Test Name", "Test Info");
         int id = testTask.getTaskId();
 
         //When
@@ -56,7 +45,7 @@ class InMemoryHistoryManagerTest {
 
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), TEST_LIST_SIZE,"История сохраняется не верно");
+        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
     }
 
     @DisplayName("При удалении задачи она пропадает из просмотров")
@@ -64,7 +53,7 @@ class InMemoryHistoryManagerTest {
     void test_Delete_Task_From_Views() {
         //Given
         final int TEST_LIST_SIZE = 0;
-        Task testTask = taskManagerTest.createNewTask("Test Name","Test Info");
+        Task testTask = taskManagerTest.createNewTask("Test Name", "Test Info");
         int id = testTask.getTaskId();
 
         //When
@@ -73,7 +62,7 @@ class InMemoryHistoryManagerTest {
 
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), TEST_LIST_SIZE,"История сохраняется не верно");
+        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
     }
 
     @DisplayName("При удалении Epic удаляются и его Subtask из просмотров")
@@ -93,7 +82,7 @@ class InMemoryHistoryManagerTest {
 
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), TEST_LIST_SIZE,"История сохраняется не верно");
+        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
     }
 
     @DisplayName("При повторном просмотре задача переносится вперед списка")
@@ -114,9 +103,11 @@ class InMemoryHistoryManagerTest {
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
 
-        assertEquals(testHistory.size(), TEST_LIST_SIZE,"История сохраняется не верно");
+        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
         assertEquals(testHistory.get(0), testEpic2, "Порядок просмотров не верен");
         assertEquals(testHistory.get(1), testEpic, "Порядок просмотров не верен");
 
     }
+=======
+>>>>>>> parent of 6cd7235 (feat(history): реализовано хранение истории через двусвязный список, добавлены тесты)
 }

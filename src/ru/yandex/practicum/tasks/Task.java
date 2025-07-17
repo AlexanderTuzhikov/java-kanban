@@ -19,6 +19,7 @@ public class Task {
     public String getTaskName() {
         return taskName;
     }
+
     public void setTaskName(String taskName) {
         this.taskName = taskName;
     }
@@ -26,6 +27,7 @@ public class Task {
     public String getTaskInfo() {
         return taskInfo;
     }
+
     public void setTaskInfo(String taskInfo) {
         this.taskInfo = taskInfo;
     }
@@ -37,6 +39,7 @@ public class Task {
     public TaskStatus getStatus() {
         return status;
     }
+
     public void setStatus(TaskStatus status) {
         this.status = status;
     }

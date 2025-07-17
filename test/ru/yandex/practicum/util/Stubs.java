@@ -1,6 +1,8 @@
 package ru.yandex.practicum.util;
 
-import ru.yandex.practicum.tasks.*;
+import ru.yandex.practicum.tasks.Epic;
+import ru.yandex.practicum.tasks.Subtask;
+import ru.yandex.practicum.tasks.Task;
 
 public class Stubs {
 
@@ -15,6 +17,5 @@ public class Stubs {
     public static Subtask testSubtask1 = new Subtask(1, "testName1", "TestInfo1", 1);
     public static Subtask testSubtask2 = new Subtask(1, "testName2", "TestInfo2", 1);
     public static Subtask testSubtask3 = new Subtask(3, "testName3", "TestInfo3", 3);
-
 
 }

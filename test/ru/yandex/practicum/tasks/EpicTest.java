@@ -13,20 +13,20 @@ class EpicTest {
     void test_Epic_Fields_Are_Initialized_Correctly_Test() {
         //Given
         int TEST_EPIC_ID = 1;
-        final String TASK_NAME_TEST = "testName1";
+        String TASK_NAME_TEST = "testName1";
         String TEST_TASK_INFO = "TestInfo1";
 
         //When
         int EPIC_ID = Stubs.testEpic1.getTaskId();
-        final String TASK_NAME = Stubs.testEpic1.getTaskName();
-        final String TASK_INFO = Stubs.testEpic1.getTaskInfo();
+        String TASK_NAME = Stubs.testEpic1.getTaskName();
+        String TASK_INFO = Stubs.testEpic1.getTaskInfo();
 
         //Then
         assertEquals(EPIC_ID, TEST_EPIC_ID,
                 "ID задачи не верен");
         assertEquals(TASK_NAME, TASK_NAME_TEST,
                 "Имя задачи не верно");
-        assertEquals( TASK_INFO, TEST_TASK_INFO,
+        assertEquals(TASK_INFO, TEST_TASK_INFO,
                 "Информация о задаче не верна");
     }
 
@@ -48,8 +48,8 @@ class EpicTest {
     @Test
     void test_Set_Name_And_Set_Info_Correctly_Test() {
         //Given
-        final String TEST_TASK_NAME = "New Test Name";
-        final String TEST_TASK_INFO = "New Test Info";
+        String TEST_TASK_NAME = "New Test Name";
+        String TEST_TASK_INFO = "New Test Info";
 
         //When
         Stubs.testEpic3.setTaskName("New Test Name");
@@ -66,8 +66,8 @@ class EpicTest {
     @Test
     void test_identical_Epics_By_Fields_Are_Compared_Correctly_Test() {
         //Given
-        final String TEST_TASK_INFO = Stubs.testEpic1.getTaskInfo();
-        final String TEST_TASK_NAME = Stubs.testEpic1.getTaskName();
+        String TEST_TASK_INFO = Stubs.testEpic1.getTaskInfo();
+        String TEST_TASK_NAME = Stubs.testEpic1.getTaskName();
         TaskStatus TEST_TASK_STATUS = Stubs.testEpic1.getStatus();
 
         //When
@@ -84,7 +84,7 @@ class EpicTest {
     @Test
     void test_set_Subtask_For_Epic_Correctly_Test() {
         //Given
-        final Subtask TEST_SUBTASK = new Subtask(
+        Subtask TEST_SUBTASK = new Subtask(
                 4, "testName3", "TestInfo3", 3);
 
         //When

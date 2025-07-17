@@ -12,14 +12,14 @@ class SubtaskTest {
     @Test
     void test_Subtask_Fields_Are_Initialized_Correctly_Test() {
         //Given
-        final int TEST_ID = 1;
-        final String TEST_NAME = "testName1";
-        final String TEST_INFO = "TestInfo1";
+        int TEST_ID = 1;
+        String TEST_NAME = "testName1";
+        String TEST_INFO = "TestInfo1";
 
         //When
-        final int SUBTASK_ID = Stubs.testSubtask1.getTaskId();
-        final String SUBTASK_NAME = Stubs.testSubtask1.getTaskName();
-        final String SUBTASK_INFO = Stubs.testSubtask1.getTaskInfo();
+        int SUBTASK_ID = Stubs.testSubtask1.getTaskId();
+        String SUBTASK_NAME = Stubs.testSubtask1.getTaskName();
+        String SUBTASK_INFO = Stubs.testSubtask1.getTaskInfo();
 
         //Then
         assertEquals(TEST_ID, SUBTASK_ID,
@@ -34,7 +34,7 @@ class SubtaskTest {
     @Test
     void test_Set_Status_Correctly_Test() {
         //Given
-        final TaskStatus TEST_STATUS = TaskStatus.IN_PROGRESS;
+        TaskStatus TEST_STATUS = TaskStatus.IN_PROGRESS;
 
         //When
         Stubs.testSubtask2.setStatus(TaskStatus.IN_PROGRESS);
@@ -48,14 +48,14 @@ class SubtaskTest {
     @Test
     void test_Set_Name_And_Set_Info_Correctly_Test() {
         //Given
-        final String TEST_NAME = "New Test Name";
-        final String TEST_INFO = "New Test Info";
+        String TEST_NAME = "New Test Name";
+        String TEST_INFO = "New Test Info";
 
         //When
         Stubs.testSubtask3.setTaskName("New Test Name");
         Stubs.testSubtask3.setTaskInfo("New Test Info");
-        final String TASK_NAME = Stubs.testSubtask3.getTaskName();
-        final String TASK_INFO = Stubs.testSubtask3.getTaskInfo();
+        String TASK_NAME = Stubs.testSubtask3.getTaskName();
+        String TASK_INFO = Stubs.testSubtask3.getTaskInfo();
 
         //Then
         assertEquals(TEST_NAME, TASK_NAME, "Установка нового имени работает не корректно");
@@ -66,9 +66,9 @@ class SubtaskTest {
     @Test
     void test_Identical_Subtasks_By_Fields_Are_Compared_Correctly_Test() {
         //Given
-        final String TEST_INFO = Stubs.testSubtask1.getTaskInfo();
-        final String TEST_NAME = Stubs.testSubtask1.getTaskName();
-        final TaskStatus TEST_STATUS = Stubs.testSubtask1.getStatus();
+        String TEST_INFO = Stubs.testSubtask1.getTaskInfo();
+        String TEST_NAME = Stubs.testSubtask1.getTaskName();
+        TaskStatus TEST_STATUS = Stubs.testSubtask1.getStatus();
 
         //When
         Stubs.testSubtask2.setTaskInfo(TEST_INFO);
@@ -84,10 +84,10 @@ class SubtaskTest {
     @Test
     void test_Get_Epic_Id_Correctly_Test() {
         //Given
-        final int TEST_EPIC_ID = 3;
+        int TEST_EPIC_ID = 3;
 
         //When
-        final int EPIC_ID = Stubs.testSubtask3.getEpicId();
+        int EPIC_ID = Stubs.testSubtask3.getEpicId();
 
         //Then
         assertEquals(TEST_EPIC_ID, EPIC_ID, "Метод вызова EpicID работает не корректно ");
