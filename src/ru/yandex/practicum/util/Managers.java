@@ -7,8 +7,8 @@ import ru.yandex.practicum.manager.TaskManager;
 
 public class Managers {
 
-    private final static InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-    private final static InMemoryTaskManager taskManager = new InMemoryTaskManager();
+    private static final InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    private static final InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
     private Managers() {
     }
