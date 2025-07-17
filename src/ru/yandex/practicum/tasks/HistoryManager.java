@@ -1,10 +1,11 @@
 package ru.yandex.practicum.tasks;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface HistoryManager {
 
-    ArrayList<Task> getHistory();
+    void add(Task task);
+    void remove(int id);
+    List<Task> getHistory();
 
-    void updateHistory(Task task);
 }

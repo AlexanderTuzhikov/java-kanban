@@ -1,6 +1,7 @@
 package ru.yandex.practicum.tasks;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Epic extends Task {
