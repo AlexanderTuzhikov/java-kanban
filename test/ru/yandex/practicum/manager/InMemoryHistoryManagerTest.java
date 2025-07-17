@@ -5,10 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasks.*;
 import ru.yandex.practicum.util.Managers;
-
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
     TaskManager taskManagerTest;

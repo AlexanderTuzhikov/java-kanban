@@ -5,12 +5,9 @@ import ru.yandex.practicum.manager.HistoryManager;
 import ru.yandex.practicum.manager.TaskManager;
 import ru.yandex.practicum.tasks.*;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
 
-import static org.testng.Assert.*;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
 

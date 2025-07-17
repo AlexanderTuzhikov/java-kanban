@@ -2,11 +2,10 @@ package ru.yandex.practicum.manager;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.testng.Assert.*;
-
 import ru.yandex.practicum.tasks.*;
 import ru.yandex.practicum.util.Managers;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
