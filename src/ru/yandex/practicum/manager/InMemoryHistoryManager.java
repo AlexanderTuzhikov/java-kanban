@@ -2,26 +2,27 @@ package ru.yandex.practicum.manager;
 
 import ru.yandex.practicum.tasks.Task;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-<<<<<<< HEAD
     private Node head;
     private Node tail;
 
     private final Map<Integer, Node> history = new HashMap<>();
-=======
-
-    private final ArrayList<Task> history = new ArrayList<>();
-    private static final int MAX_SIZE_HISTORY = 10;
->>>>>>> parent of 6cd7235 (feat(history): реализовано хранение истории через двусвязный список, добавлены тесты)
 
     @Override
-    public ArrayList<Task> getHistory() {
-        return history;
+    public void add(Task task) {
+        if (task != null) {
+            int id = task.getTaskId();
+
+            if (history.containsKey(id)) {
+                remove(id);
+            }
+
+            linkLast(task);
+        }
     }
 
-<<<<<<< HEAD
     private void linkLast(Task task) {
         if (task == null) {
             return;
@@ -33,18 +34,14 @@ public class InMemoryHistoryManager implements HistoryManager {
             head = newNode;
             tail = newNode;
             history.put(id, newNode);
-=======
-    @Override
-    public void updateHistory(Task task) {
-        if(MAX_SIZE_HISTORY == history.size()) {
-            history.removeFirst();
-            history.add(task);
->>>>>>> parent of 6cd7235 (feat(history): реализовано хранение истории через двусвязный список, добавлены тесты)
         } else {
-            history.add(task);
+            Node oldLastNode = tail;
+            Node newLastNode = new Node(oldLastNode, task, null);
+            oldLastNode.setNextNode(newLastNode);
+            tail = newLastNode;
+            history.put(id, newLastNode);
         }
     }
-<<<<<<< HEAD
 
     @Override
     public void remove(int id) {
@@ -86,6 +83,4 @@ public class InMemoryHistoryManager implements HistoryManager {
         return showHistory;
     }
 
-=======
->>>>>>> parent of 6cd7235 (feat(history): реализовано хранение истории через двусвязный список, добавлены тесты)
 }

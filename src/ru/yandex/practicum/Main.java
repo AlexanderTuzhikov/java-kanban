@@ -1,34 +1,23 @@
 package ru.yandex.practicum;
 
-<<<<<<< HEAD
 import ru.yandex.practicum.manager.HistoryManager;
 import ru.yandex.practicum.tasks.Task;
 import ru.yandex.practicum.manager.TaskManager;
-=======
-import ru.yandex.practicum.tasks.Epic;
-import ru.yandex.practicum.tasks.HistoryManager;
-import ru.yandex.practicum.tasks.TaskManager;
-import ru.yandex.practicum.tasks.TaskStatus;
->>>>>>> parent of 6cd7235 (feat(history): реализовано хранение истории через двусвязный список, добавлены тесты)
 import ru.yandex.practicum.util.Managers;
 
 public class Main {
     public static void main(String[] args) {
-
-        //Проверяем выводы программы
         TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
 
-        //Создаем задачи
-        taskManager.createNewTask("Test name1","Test info1");
-        taskManager.createNewTask("Test name2","Test info2");
-        taskManager.createNewTask("Test name3","Test info3");
+        //Реализуем пользовательский сценарий
 
-        taskManager.createNewEpic("Test name4", "Test info4");
-        taskManager.createNewEpic("Test name5", "Test info5");
-        taskManager.createNewEpic("Test name6", "Test info6");
+        //1. Создайте две задачи, эпик с тремя подзадачами и эпик без подзадач.
+        Task task = taskManager.createNewTask("Тестовая задача 1", "Тестовая информация");
+        int taskId = task.getTaskId();
+        Task task2 = taskManager.createNewTask("Тестовая задача 2", "Тестовая информация");
+        int taskId2 = task2.getTaskId();
 
-<<<<<<< HEAD
         Task epic = taskManager.createNewEpic("Тестовая EPIC задача 1", "Тестовая информация");
         int epicId = epic.getTaskId();
         Task subtask = taskManager.createNewSubtask("Тестовая подзадача 1", "Тестовая информация",
@@ -43,47 +32,32 @@ public class Main {
 
         Task epic2 = taskManager.createNewEpic("Тестовая EPIC задача 2", "Тестовая информация");
         int epicId2 = epic2.getTaskId();
-=======
-        taskManager.createNewSubtask("Test name7","Test info7",4);
-        taskManager.createNewSubtask("Test name8","Test info8",4);
-        taskManager.createNewSubtask("Test name9","Test info9",5);
 
-        //Выводим все задачи
-        System.out.println("\t\t\tВсе задачи: \n"  + taskManager.getAllTask());
->>>>>>> parent of 6cd7235 (feat(history): реализовано хранение истории через двусвязный список, добавлены тесты)
+        //2. Запросите созданные задачи несколько раз в разном порядке.
+        taskManager.getTaskById(taskId);
+        System.out.println(historyManager.getHistory());
+        taskManager.getEpicById(epicId);
+        System.out.println(historyManager.getHistory());
+        taskManager.getTaskById(taskId2);
+        System.out.println(historyManager.getHistory());
+        taskManager.getSubtaskById(subtaskId);
+        taskManager.getSubtaskById(subtaskId2);
+        taskManager.getSubtaskById(subtaskId3);
+        System.out.println(historyManager.getHistory());
+        taskManager.getTaskById(taskId2);
+        System.out.println(historyManager.getHistory());
+        taskManager.getTaskById(epicId2);
+        System.out.println(historyManager.getHistory());
 
-        System.out.println("\t\t\tВсе Epic с их подзадачами: \n");
-        for(Epic epic : taskManager.getAllEpic()) {
-            System.out.println("Epic: " + epic);
-            System.out.println("Подзадачи: " + taskManager.getAllEpicSubtask(epic));
-            System.out.println("-------------------------------------------------");
-        }
+        // 3. Удалите задачу, которая есть в истории, и проверьте, что при печати она не будет выводиться.
+        taskManager.removeTaskById(taskId);
+        System.out.println(historyManager.getHistory());
 
-        //Изменяем статусы
-        taskManager.updateTask(taskManager.getTaskById(1), TaskStatus.IN_PROGRESS);
-        taskManager.updateSubtask(taskManager.getSubtaskById(7), TaskStatus.IN_PROGRESS);
-        taskManager.updateSubtask(taskManager.getSubtaskById(9), TaskStatus.DONE);
+        /*4. Удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик,
+         так и все его подзадачи.*/
+        taskManager.removeEpicById(epicId);
+        System.out.println(historyManager.getHistory());
 
-        //Выводим задачи с измененным статусом
-        System.out.println("\t\t\tСтатус изменен: \n" + taskManager.getTaskById(1));
-        System.out.println("\t\t\tСтатус изменен: \n" + taskManager.getSubtaskById(7));
-        System.out.println("\t\t\tСтатус изменен у Epic: \n" + taskManager.getEpicById(4));
-        System.out.println("\t\t\tСтатус изменен: \n" + taskManager.getSubtaskById(9));
-        System.out.println("\t\t\tСтатус изменен у Epic: \n" + taskManager.getEpicById(5));
-
-        //Получаем историю последних 10 просмотров
-        System.out.println("\t\t\tИстория последних 10 просмотров задач: \n" +
-                historyManager.getHistory());
-
-        //Добавляем 3 просмотра
-        taskManager.getTaskById(1);
-        taskManager.getSubtaskById(8);
-        taskManager.getEpicById(6);
-
-        //Получаем историю последних просмотров
-        System.out.println("\t\t\tИстория последних 10 просмотров задач: \n" +
-                historyManager.getHistory());
-
-
+        //СЦЕНАРИЙ ВЫПОЛЯЕТСЯ ПРАВИЛЬНО
     }
 }

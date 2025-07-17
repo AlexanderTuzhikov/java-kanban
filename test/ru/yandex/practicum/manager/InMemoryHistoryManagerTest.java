@@ -1,8 +1,19 @@
 package ru.yandex.practicum.manager;
 
-class InMemoryHistoryManagerTest {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.tasks.*;
+import ru.yandex.practicum.util.Managers;
 
-<<<<<<< HEAD
+import java.util.List;
+
+import static org.testng.Assert.assertEquals;
+
+class InMemoryHistoryManagerTest {
+    TaskManager taskManagerTest;
+    HistoryManager historyManagerTest;
+
     @DisplayName("Подготовка среды")
     @BeforeEach
     void setUp() {
@@ -19,14 +30,14 @@ class InMemoryHistoryManagerTest {
         final int TEST_LIST_SIZE = 1;
         Task testTask = taskManagerTest.createNewTask("Test Name", "Test Info");
         int id = testTask.getTaskId();
-        List<Task> testHistory = historyManagerTest.getHistory();
+        List<Task> testHistory;
 
         //When
         taskManagerTest.getTaskById(id);
 
         //Then
         testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), 1, "История сохраняет 1 задачу");
+        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняет 1 задачу");
         assertEquals(testHistory.get(0), testTask, "Сохранена верная задача");
     }
 
@@ -108,6 +119,4 @@ class InMemoryHistoryManagerTest {
         assertEquals(testHistory.get(1), testEpic, "Порядок просмотров не верен");
 
     }
-=======
->>>>>>> parent of 6cd7235 (feat(history): реализовано хранение истории через двусвязный список, добавлены тесты)
 }
