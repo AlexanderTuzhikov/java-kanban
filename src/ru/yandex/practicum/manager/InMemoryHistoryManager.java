@@ -45,30 +45,42 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-
         if (history.containsKey(id)) {
-            Node nodeForRemove = history.get(id);
-            Node prevNode = nodeForRemove.getPrevNode();
-            Node nextNode = nodeForRemove.getNextNode();
-
-            if (history.size() == 1) {
-                head = null;
-                tail = null;
-            } else if (prevNode == null) {
-                nextNode.setPrevNode(null);
-                head = nextNode;
-            } else if (nextNode == null) {
-                prevNode.setNextNode(null);
-                tail = prevNode;
-            } else {
-                prevNode.setNextNode(nextNode);
-                nextNode.setPrevNode(prevNode);
-            }
-
-            nodeForRemove.setPrevNode(null);
-            nodeForRemove.setNextNode(null);
+            Node node = history.get(id);
+            removeNode(node);
             history.remove(id);
         }
+    }
+
+    private void removeNode(Node node) {
+        if (node == null) {
+            return;
+        }
+
+        Node prevNode = node.getPrevNode();
+        Node nextNode = node.getNextNode();
+
+        if (node == head && node == tail) {
+            head = null;
+            tail = null;
+        } else if (node == head) {
+            head = nextNode;
+            if (nextNode != null) {
+                nextNode.setPrevNode(null);
+            }
+        } else if (node == tail) {
+            tail = prevNode;
+            if (prevNode != null) {
+                prevNode.setNextNode(null);
+            }
+        } else {
+            prevNode.setNextNode(nextNode);
+            nextNode.setPrevNode(prevNode);
+        }
+
+        node.setPrevNode(null);
+        node.setNextNode(null);
+
     }
 
     @Override
