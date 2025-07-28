@@ -2,11 +2,10 @@ package ru.yandex.practicum.manager;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.testng.Assert.*;
-
 import ru.yandex.practicum.tasks.*;
 import ru.yandex.practicum.util.Managers;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
@@ -26,7 +25,7 @@ class InMemoryTaskManagerTest {
         testEpic1 = taskManager.createNewEpic("Test name", "Test info");
         testSubtask1 = taskManager.createNewSubtask("Test name", "Test info",
                 testEpic1.getTaskId());
-        testSubtask2 = taskManager.createNewSubtask("Test name", "Test info", 3);
+        testSubtask2 = taskManager.createNewSubtask("Test name", "Test info", 10);
 
         //Then
         assertNotNull(testTask1, "Задача создана некорректно");

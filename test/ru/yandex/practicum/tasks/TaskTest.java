@@ -4,11 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.util.Stubs;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
 
-    Task testTask = new Task(1, "testName","testInfo");
+    Task testTask = new Task(1, "testName", "testInfo");
 
     @DisplayName("Поля задач проинициализированы верно при создании")
     @Test
@@ -59,7 +59,7 @@ class TaskTest {
 
         //Then
         assertEquals(TEST_NAME, Stubs.testTask3.getTaskName(),
-                 "Установка нового имени работает не корректно");
+                "Установка нового имени работает не корректно");
         assertEquals(TEST_INFO, Stubs.testTask3.getTaskInfo(),
                 "Установка новой информации работает не корректно");
     }

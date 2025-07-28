@@ -13,8 +13,9 @@ public class Epic extends Task {
     public HashMap<Integer, Subtask> getSubtaskForEpic() {
         return subtaskForEpic;
     }
+
     public void setSubtaskForEpic(int taskId, Subtask subtask) {
-        subtaskForEpic.put(taskId,subtask);
+        subtaskForEpic.put(taskId, subtask);
     }
 
     @Override

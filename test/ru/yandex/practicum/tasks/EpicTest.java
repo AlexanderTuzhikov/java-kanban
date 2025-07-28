@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.util.Stubs;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 
@@ -26,7 +26,7 @@ class EpicTest {
                 "ID задачи не верен");
         assertEquals(TASK_NAME, TASK_NAME_TEST,
                 "Имя задачи не верно");
-        assertEquals( TASK_INFO, TEST_TASK_INFO,
+        assertEquals(TASK_INFO, TEST_TASK_INFO,
                 "Информация о задаче не верна");
     }
 
