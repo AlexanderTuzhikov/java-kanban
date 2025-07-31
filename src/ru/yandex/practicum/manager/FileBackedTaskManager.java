@@ -66,16 +66,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-            for (int EpicId : subtasksForEpic.keySet()) {
-                Epic epic = fileBackedTaskManager.epicList.get(EpicId);
-                List<Subtask> subtasks = subtasksForEpic.get(EpicId);
+            for (int epicId : subtasksForEpic.keySet()) {
+                Epic epic = fileBackedTaskManager.epicList.get(epicId);
+                List<Subtask> subtasks = subtasksForEpic.get(epicId);
                 for (Subtask subtaskToAdd : subtasks) {
                     int subtaskID = subtaskToAdd.getTaskId();
                     epic.setSubtaskForEpic(subtaskID, subtaskToAdd);
                 }
             }
-        } catch (
-                IOException exception) {
+        } catch (IOException exception) {
             throw new ManagerSaveException("Ошибка чтения файла: " + saveFile, exception);
         }
 
