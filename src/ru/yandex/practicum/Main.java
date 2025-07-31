@@ -1,13 +1,13 @@
 package ru.yandex.practicum;
 
 import ru.yandex.practicum.manager.HistoryManager;
-import ru.yandex.practicum.tasks.Task;
 import ru.yandex.practicum.manager.TaskManager;
+import ru.yandex.practicum.tasks.Task;
 import ru.yandex.practicum.util.Managers;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = Managers.getDefaultFileBacked();
         HistoryManager historyManager = Managers.getDefaultHistory();
 
         //Реализуем пользовательский сценарий
