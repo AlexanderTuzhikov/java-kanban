@@ -1,4 +1,5 @@
 package ru.yandex.practicum.manager;
+
 import ru.yandex.practicum.tasks.*;
 
 import java.io.*;
@@ -28,7 +29,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(Path saveFile) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(saveFile);
-        int loadActualID = 0;
+        int loadActualId = 0;
 
         try (BufferedReader reader = Files.newBufferedReader(saveFile)) {
             Map<Integer, List<Subtask>> subtasksForEpic = new HashMap<>();
@@ -42,10 +43,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 Task task = fromString(line);
                 Type type = task.getType();
-                int taskID = task.getTaskId();
+                int taskId = task.getTaskId();
 
-                if (taskID > loadActualID) {
-                    loadActualID = taskID + 1;
+                if (taskId > loadActualId) {
+                    loadActualId = taskId + 1;
                 }
 
                 switch (type) {
@@ -54,20 +55,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     case SUBTASK -> {
                         Subtask subtask = (Subtask) task;
                         fileBackedTaskManager.putSubtask(subtask);
-                        int epicID = subtask.getEpicId();
+                        int epicId = subtask.getEpicId();
 
-                        if (subtasksForEpic.containsKey(epicID)) {
-                            List<Subtask> subtasks = subtasksForEpic.get(epicID);
+                        if (subtasksForEpic.containsKey(epicId)) {
+                            List<Subtask> subtasks = subtasksForEpic.get(epicId);
                             subtasks.add(subtask);
                         } else {
-                            subtasksForEpic.put(epicID, new ArrayList<>(List.of(subtask)));
+                            subtasksForEpic.put(epicId, new ArrayList<>(List.of(subtask)));
                         }
                     }
                 }
             }
-            for (int EpicID : subtasksForEpic.keySet()) {
-                Epic epic = fileBackedTaskManager.epicList.get(EpicID);
-                List<Subtask> subtasks = subtasksForEpic.get(EpicID);
+            for (int EpicId : subtasksForEpic.keySet()) {
+                Epic epic = fileBackedTaskManager.epicList.get(EpicId);
+                List<Subtask> subtasks = subtasksForEpic.get(EpicId);
                 for (Subtask subtaskToAdd : subtasks) {
                     int subtaskID = subtaskToAdd.getTaskId();
                     epic.setSubtaskForEpic(subtaskID, subtaskToAdd);
@@ -78,7 +79,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Ошибка чтения файла: " + saveFile, exception);
         }
 
-        fileBackedTaskManager.setTaskId(loadActualID);
+        fileBackedTaskManager.setTaskId(loadActualId);
         return fileBackedTaskManager;
     }
 
