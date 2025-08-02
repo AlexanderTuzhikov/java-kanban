@@ -8,6 +8,12 @@ public class Subtask extends Task {
     public Subtask(int taskId, String taskName, String taskInfo, int epicId) {
         super(taskId, taskName, taskInfo);
         this.epicId = epicId;
+        this.type = Type.SUBTASK;
+    }
+
+    public Subtask(int taskId, Type type, String taskName, TaskStatus status, String taskInfo, int epicId) {
+        super(taskId, type, taskName, status, taskInfo);
+        this.epicId = epicId;
     }
 
     public int getEpicId() {
@@ -28,12 +34,6 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask {" +
-                "taskName='" + getTaskName() + '\'' +
-                ", taskInfo='" + getTaskInfo() + '\'' +
-                ", taskId=" + getTaskId() +
-                ", status=" + getStatus() +
-                ", epicId=" + epicId +
-                "}\n";
+        return String.format("%s,%s,%s,%s,%s,%s", getTaskId(), type, taskName, status, taskInfo, epicId);
     }
 }

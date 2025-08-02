@@ -12,11 +12,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    private final Map<Integer, Task> taskList = new HashMap<>();
-    private final Map<Integer, Subtask> subtaskList = new HashMap<>();
-    private final Map<Integer, Epic> epicList = new HashMap<>();
+    protected final Map<Integer, Task> taskList = new HashMap<>();
+    protected final Map<Integer, Subtask> subtaskList = new HashMap<>();
+    protected final Map<Integer, Epic> epicList = new HashMap<>();
 
-    private int taskId = 1;
+    protected int taskId = 1;
 
     @Override
     public Task createNewTask(String taskName, String taskInfo) {
@@ -35,7 +35,7 @@ public class InMemoryTaskManager implements TaskManager {
         taskId++;
         Subtask subtask = new Subtask(taskId, taskName, taskInfo, epicId);
         putSubtask(subtask);
-        Epic epic = getEpicById(epicId);
+        Epic epic = epicList.get(epicId);
         epic.setSubtaskForEpic(taskId, subtask);
         return subtask;
     }
@@ -144,7 +144,7 @@ public class InMemoryTaskManager implements TaskManager {
             subtaskList.put(idSubtask, subtask);
 
             int idEpic = subtask.getEpicId();
-            Epic epic = getEpicById(idEpic);
+            Epic epic = epicList.get(idEpic);
             updateEpic(epic);
         }
     }
@@ -224,9 +224,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeSubtaskById(int id) {
-        Subtask subtask = getSubtaskById(id);
+        Subtask subtask = subtaskList.get(id);
         int epicId = subtask.getEpicId();
-        Epic epic = getEpicById(epicId);
+        Epic epic = epicList.get(epicId);
 
         Map<Integer, Subtask> subtasks = epic.getSubtaskForEpic();
         subtasks.remove(id);

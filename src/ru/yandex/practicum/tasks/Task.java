@@ -4,16 +4,31 @@ import java.util.Objects;
 
 public class Task {
 
-    private String taskName;
-    private String taskInfo;
     private final int taskId;
-    private TaskStatus status;
+    protected Type type;
+    protected String taskName;
+    protected TaskStatus status;
+    protected String taskInfo;
 
     public Task(int taskId, String taskName, String taskInfo) {
+        this.taskId = taskId;
+        type = Type.TASK;
         this.taskName = taskName;
         this.taskInfo = taskInfo;
-        this.taskId = taskId;
         status = TaskStatus.NEW;
+    }
+
+    public Task(int taskId, Type type, String taskName, TaskStatus taskStatus, String taskInfo) {
+        this.taskId = taskId;
+        this.type = type;
+        this.taskName = taskName;
+        this.status = taskStatus;
+        this.taskInfo = taskInfo;
+
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public String getTaskName() {
@@ -60,11 +75,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task {" +
-                "taskName='" + taskName + '\'' +
-                ", taskInfo='" + taskInfo + '\'' +
-                ", taskId=" + taskId +
-                ", status=" + status +
-                "}\n";
+        return String.format("%s,%s,%s,%s,%s", taskId, type, taskName, status, taskInfo);
     }
 }

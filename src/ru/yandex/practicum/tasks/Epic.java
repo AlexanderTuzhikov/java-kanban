@@ -8,6 +8,11 @@ public class Epic extends Task {
 
     public Epic(int taskId, String taskName, String taskInfo) {
         super(taskId, taskName, taskInfo);
+        this.type = Type.EPIC;
+    }
+
+    public Epic(int taskId, Type type, String taskName, TaskStatus status, String taskInfo) {
+        super(taskId, type, taskName, status, taskInfo);
     }
 
     public HashMap<Integer, Subtask> getSubtaskForEpic() {
@@ -32,11 +37,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic {" +
-                "taskName='" + getTaskName() + '\'' +
-                ", taskInfo='" + getTaskInfo() + '\'' +
-                ", taskId=" + getTaskId() +
-                ", status=" + getStatus() +
-                "}\n";
+        return String.format("%s,%s,%s,%s,%s", getTaskId(), type, taskName, status, taskInfo);
     }
 }

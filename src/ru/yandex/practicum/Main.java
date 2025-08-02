@@ -1,8 +1,8 @@
 package ru.yandex.practicum;
 
 import ru.yandex.practicum.manager.HistoryManager;
-import ru.yandex.practicum.tasks.Task;
 import ru.yandex.practicum.manager.TaskManager;
+import ru.yandex.practicum.tasks.Task;
 import ru.yandex.practicum.util.Managers;
 
 public class Main {

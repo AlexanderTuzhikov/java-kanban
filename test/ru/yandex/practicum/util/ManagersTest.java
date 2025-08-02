@@ -42,9 +42,9 @@ class ManagersTest {
         assertNotNull(TEST_MANAGER.getAllEpic(), "Epic не добавляются");
 
         //When
-        Epic epic = TEST_MANAGER.getEpicById(3);
+        Epic epic = TEST_MANAGER.getEpicById(2);
         //Then
-        assertEquals(epic.getTaskId(), 3, "Метод получения ID задачи не работает");
+        assertEquals(epic.getTaskId(), 2, "Метод получения ID задачи не работает");
 
         //When
         TEST_MANAGER.createNewSubtask("TEST_MANAGER name", "TEST_MANAGER info", 2);
@@ -60,7 +60,7 @@ class ManagersTest {
         assertTrue(TEST_LIST_TASKS.isEmpty(), "Метод удаления всех задач не работает");
 
         //When
-        TEST_MANAGER.removeEpicById(3);
+        TEST_MANAGER.removeEpicById(2);
         TEST_LIST_EPIC = TEST_MANAGER.getAllEpic();
 
         //Then
