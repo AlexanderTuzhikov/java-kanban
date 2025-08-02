@@ -66,14 +66,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-            for (int epicId : subtasksForEpic.keySet()) {
-                Epic epic = fileBackedTaskManager.epicList.get(epicId);
-                List<Subtask> subtasks = subtasksForEpic.get(epicId);
-                for (Subtask subtaskToAdd : subtasks) {
-                    int subtaskID = subtaskToAdd.getTaskId();
-                    epic.setSubtaskForEpic(subtaskID, subtaskToAdd);
-                }
-            }
+            updateSubtaskInEpic(fileBackedTaskManager, subtasksForEpic);
         } catch (IOException exception) {
             throw new ManagerSaveException("Ошибка чтения файла: " + saveFile, exception);
         }
@@ -82,11 +75,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return fileBackedTaskManager;
     }
 
+    private static void updateSubtaskInEpic(FileBackedTaskManager fileBackedTaskManager,
+                                            Map<Integer, List<Subtask>> subtasksForEpic) {
+        for (int epicId : subtasksForEpic.keySet()) {
+            Epic epic = fileBackedTaskManager.epicList.get(epicId);
+            List<Subtask> subtasks = subtasksForEpic.get(epicId);
+            for (Subtask subtaskToAdd : subtasks) {
+                int subtaskID = subtaskToAdd.getTaskId();
+                epic.setSubtaskForEpic(subtaskID, subtaskToAdd);
+            }
+        }
+
+        List<Epic> epics = fileBackedTaskManager.getAllEpic();
+
+        for (Epic epic : epics) {
+            fileBackedTaskManager.updateEpic(epic);
+        }
+    }
+
     public void setTaskId(int id) {
         this.taskId = id;
     }
 
-    public void save() {
+    private void save() {
         List<Task> tasks = getAllTask();
         List<Epic> epics = getAllEpic();
         List<Subtask> subtasks = getAllSubtaskTask();

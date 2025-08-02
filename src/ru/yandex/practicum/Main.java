@@ -7,7 +7,7 @@ import ru.yandex.practicum.util.Managers;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefaultFileBacked();
+        TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
 
         //Реализуем пользовательский сценарий

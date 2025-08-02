@@ -21,20 +21,16 @@ public class Managers {
     }
 
     private static final InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-    private static final InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
     private Managers() {
     }
 
     public static InMemoryTaskManager getDefault() {
-        return taskManager;
+        return FileBackedTaskManager.loadFromFile(SAVE_FILE);
     }
 
     public static InMemoryHistoryManager getDefaultHistory() {
         return historyManager;
     }
 
-    public static FileBackedTaskManager getDefaultFileBacked() {
-        return FileBackedTaskManager.loadFromFile(SAVE_FILE);
-    }
 }
