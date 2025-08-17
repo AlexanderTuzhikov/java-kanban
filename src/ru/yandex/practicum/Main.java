@@ -1,63 +1,87 @@
 package ru.yandex.practicum;
 
-import ru.yandex.practicum.manager.HistoryManager;
-import ru.yandex.practicum.manager.TaskManager;
+import ru.yandex.practicum.manager.FileBackedTaskManager;
+import ru.yandex.practicum.tasks.Subtask;
 import ru.yandex.practicum.tasks.Task;
-import ru.yandex.practicum.util.Managers;
+import ru.yandex.practicum.tasks.TaskStatus;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
-    public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefault();
-        HistoryManager historyManager = Managers.getDefaultHistory();
+    static void main() throws IOException {
 
-        //Реализуем пользовательский сценарий
+        Path testFile = Files.createTempFile("TEST", ".csv");
 
-        //1. Создайте две задачи, эпик с тремя подзадачами и эпик без подзадач.
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(testFile);
+
+        //ПОЛЬЗОВАТЕЛЬСКИЙ СЦЕНАРИЙ РАБОТЫ СО ВРЕМЕНЕМ
+        //1. Создаем TASK
         Task task = taskManager.createNewTask("Тестовая задача 1", "Тестовая информация");
-        int taskId = task.getTaskId();
-        Task task2 = taskManager.createNewTask("Тестовая задача 2", "Тестовая информация");
-        int taskId2 = task2.getTaskId();
+        taskManager.setTimeTask(task, LocalDateTime.of(2025, 8, 12, 16, 0),
+                Duration.ofMinutes(25));
+        // System.out.println(task); //проверяем корректность отображения
+
+        //2. Создаем EPIC с SUBTASK
 
         Task epic = taskManager.createNewEpic("Тестовая EPIC задача 1", "Тестовая информация");
         int epicId = epic.getTaskId();
-        Task subtask = taskManager.createNewSubtask("Тестовая подзадача 1", "Тестовая информация",
+
+        Subtask subtask = taskManager.createNewSubtask("Тестовая подзадача 1", "Тестовая информация",
                 epicId);
-        int subtaskId = subtask.getTaskId();
+        taskManager.setTimeTask(subtask, LocalDateTime.of(2025, 8, 13, 10, 0),
+                Duration.ofMinutes(30));
+
         Task subtask2 = taskManager.createNewSubtask("Тестовая подзадача 2", "Тестовая информация",
                 epicId);
-        int subtaskId2 = subtask2.getTaskId();
+        taskManager.setTimeTask(subtask2, LocalDateTime.of(2025, 8, 13, 17, 0),
+                Duration.ofMinutes(30));
+
         Task subtask3 = taskManager.createNewSubtask("Тестовая подзадача 3", "Тестовая информация",
                 epicId);
-        int subtaskId3 = subtask3.getTaskId();
+        taskManager.setTimeTask(subtask3, LocalDateTime.of(2025, 8, 13, 15, 0),
+                Duration.ofMinutes(30));
+        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем приоритизацию задач
 
-        Task epic2 = taskManager.createNewEpic("Тестовая EPIC задача 2", "Тестовая информация");
-        int epicId2 = epic2.getTaskId();
+        //3. Меняем время у SUBTASK
+        taskManager.setTimeTask(subtask, LocalDateTime.of(2025, 8, 12, 10, 0),
+                Duration.ofMinutes(30));
+        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем изменение данных в EPIC и приоритизации
 
-        //2. Запросите созданные задачи несколько раз в разном порядке.
-        taskManager.getTaskById(taskId);
-        System.out.println(historyManager.getHistory());
-        taskManager.getEpicById(epicId);
-        System.out.println(historyManager.getHistory());
-        taskManager.getTaskById(taskId2);
-        System.out.println(historyManager.getHistory());
-        taskManager.getSubtaskById(subtaskId);
-        taskManager.getSubtaskById(subtaskId2);
-        taskManager.getSubtaskById(subtaskId3);
-        System.out.println(historyManager.getHistory());
-        taskManager.getTaskById(taskId2);
-        System.out.println(historyManager.getHistory());
-        taskManager.getTaskById(epicId2);
-        System.out.println(historyManager.getHistory());
+        //4. Меняем статус SUBTASK
+        taskManager.updateSubtaskStatus(subtask, TaskStatus.DONE);
+        // System.out.println(taskManager.getPrioritizedTasks()); // проверяем изменение данных в EPIC
 
-        // 3. Удалите задачу, которая есть в истории, и проверьте, что при печати она не будет выводиться.
-        taskManager.removeTaskById(taskId);
-        System.out.println(historyManager.getHistory());
+        //5. Удаляем SUBTASK
+        taskManager.removeSubtaskById(subtask.getTaskId());
+        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем изменение данных в EPIC и приоритизации
 
-        /*4. Удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик,
-         так и все его подзадачи.*/
+        //6. Удаляем EPIC
         taskManager.removeEpicById(epicId);
-        System.out.println(historyManager.getHistory());
+        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем удаление EPIC и SUBTASK
 
-        //СЦЕНАРИЙ ВЫПОЛЯЕТСЯ ПРАВИЛЬНО
+        /*7. Вызываем конфликт времени
+        Task task2 = taskManager.createNewTask("Тестовая задача 1", "Тестовая информация");
+        taskManager.setTimeTask(task2, LocalDateTime.of(2025, 8, 12, 16, 0),
+                Duration.ofMinutes(25));
+        System.out.println(taskManager.getPrioritizedTasks());*/ // ошибка
+
+        //8. Загрузка файла
+        FileBackedTaskManager loadTaskManager = FileBackedTaskManager.loadFromFile(testFile);
+
+        try (BufferedReader reader = Files.newBufferedReader(testFile)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException exception) {
+            throw new IOException("Ошибка чтения файла");
+        }
+
+        System.out.println(loadTaskManager.getAllTask());
     }
 }

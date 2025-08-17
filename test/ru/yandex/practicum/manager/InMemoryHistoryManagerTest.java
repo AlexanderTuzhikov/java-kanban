@@ -5,7 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasks.*;
 import ru.yandex.practicum.util.Managers;
+
 import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,8 +38,8 @@ class InMemoryHistoryManagerTest {
 
         //Then
         testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняет 1 задачу");
-        assertEquals(testHistory.get(0), testTask, "Сохранена верная задача");
+        assertEquals(TEST_LIST_SIZE, testHistory.size(), "История сохраняет 1 задачу");
+        assertEquals(testHistory.getFirst(), testTask, "Сохранена верная задача");
     }
 
     @DisplayName("При повторном просмотре задача не дублируется")
@@ -55,7 +57,7 @@ class InMemoryHistoryManagerTest {
 
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
+        assertEquals(TEST_LIST_SIZE, testHistory.size(), "История сохраняется не верно");
     }
 
     @DisplayName("При удалении задачи она пропадает из просмотров")
@@ -67,12 +69,12 @@ class InMemoryHistoryManagerTest {
         int id = testTask.getTaskId();
 
         //When
-        taskManagerTest.getTaskById(id);
         taskManagerTest.removeTaskById(id);
+
 
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
+        assertEquals(TEST_LIST_SIZE, testHistory.size(), "История сохраняется не верно");
     }
 
     @DisplayName("При удалении Epic удаляются и его Subtask из просмотров")
@@ -92,7 +94,7 @@ class InMemoryHistoryManagerTest {
 
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
-        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
+        assertEquals(TEST_LIST_SIZE, testHistory.size(), "История сохраняется не верно");
     }
 
     @DisplayName("При повторном просмотре задача переносится вперед списка")
@@ -113,7 +115,7 @@ class InMemoryHistoryManagerTest {
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
 
-        assertEquals(testHistory.size(), TEST_LIST_SIZE, "История сохраняется не верно");
+        assertEquals(TEST_LIST_SIZE, testHistory.size(), "История сохраняется не верно");
         assertEquals(testHistory.get(0), testEpic2, "Порядок просмотров не верен");
         assertEquals(testHistory.get(1), testEpic, "Порядок просмотров не верен");
 

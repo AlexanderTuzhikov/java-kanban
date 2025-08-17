@@ -9,7 +9,11 @@ import ru.yandex.practicum.tasks.TaskStatus;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,10 +46,13 @@ class FileBackedTaskManagerTest {
         //When
         FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
 
-        Task loaderTask = loaderManager.getTaskById(taskID);
-        Epic loaderEpic = loaderManager.getEpicById(epicID);
-        Subtask loaderSubtask = loaderManager.getSubtaskById(subtaskID);
-        Map<Integer, Subtask> subtaskMap = loaderEpic.getSubtaskForEpic();
+        Optional<Task> loaderTask = loaderManager.getTaskById(taskID);
+        Optional<Epic> loaderEpic = loaderManager.getEpicById(epicID);
+        Optional<Subtask> loaderSubtask = loaderManager.getSubtaskById(subtaskID);
+        Map<Integer, Subtask> subtaskMap = loaderEpic
+                .map(Epic::getSubtaskForEpic)
+                .orElse(new HashMap<>());
+
         Subtask subtaskEpic = subtaskMap.get(subtaskID);
         Task loaderTask2 = loaderManager.createNewTask("Задача 2", "Информация 2");
         int loaderTask2ID = loaderTask2.getTaskId();
@@ -53,12 +60,26 @@ class FileBackedTaskManagerTest {
 
         //Then
         assertEquals(2, loaderManager.getAllTask().size(), "Задачи не восстановились");
-        assertEquals(taskID, loaderManager.getTaskById(taskID).getTaskId(), "ID задачи не совпадают");
+        assertEquals(taskID, loaderManager.getTaskById(taskID)
+                        .orElseThrow(() -> new IllegalArgumentException("Epic c ID: " + taskID + " не найден"))
+                        .getTaskId()
+                , "ID задачи не совпадают");
+
         assertEquals(1, loaderManager.getAllEpic().size(), "Epic не восстановились");
-        assertEquals(epic.getTaskName(), loaderEpic.getTaskName(), "Имя Epic восстановилось не верно");
+        assertEquals(epic.getTaskName(), loaderEpic
+                        .orElseThrow(() -> new IllegalArgumentException("Epic c ID: " + epicID + " не найден"))
+                        .getTaskName(),
+                "Имя Epic восстановилось не верно");
+
         assertEquals(1, loaderManager.getAllSubtaskTask().size(), "Подзадачи не восстановились");
-        assertEquals(subtask.getType(), loaderSubtask.getType(), "Тип подзадачи восстановился не верно");
-        assertEquals(task, loaderTask, "Задачи не равны");
+        assertEquals(subtask.getType(), loaderSubtask
+                .orElseThrow(() -> new IllegalArgumentException("Subtask c ID: " + subtaskID + " не найден"))
+                .getType(), "Тип подзадачи восстановился не верно");
+
+        assertEquals(task, loaderTask
+                        .orElseThrow(() -> new IllegalArgumentException("Task c ID: " + taskID + " не найден"))
+                , "Задачи не равны");
+
         assertEquals(subtask, subtaskEpic, "Связи Epic и Подзадач не восстановлены");
         assertTrue(loaderTask2ID > subtaskID, "Счетчик ID восстановился не корректно");
     }
@@ -83,21 +104,24 @@ class FileBackedTaskManagerTest {
 
         Epic epic3 = taskManager.createNewEpic("Epic 7", "Информация 7");
         int epicID3 = epic3.getTaskId();
-        Subtask subtask7 = taskManager.createNewSubtask("Подзадача 7", "Информация 7", epicID3);
 
         //When
-        taskManager.updateSubtask(subtask1, TaskStatus.IN_PROGRESS);
-        taskManager.updateSubtask(subtask2, TaskStatus.IN_PROGRESS);
-        taskManager.updateSubtask(subtask3, TaskStatus.DONE);
+        taskManager.updateSubtaskStatus(subtask1, TaskStatus.IN_PROGRESS);
+        taskManager.updateSubtaskStatus(subtask2, TaskStatus.IN_PROGRESS);
+        taskManager.updateSubtaskStatus(subtask3, TaskStatus.DONE);
 
-        taskManager.updateSubtask(subtask4, TaskStatus.DONE);
-        taskManager.updateSubtask(subtask5, TaskStatus.DONE);
-        taskManager.updateSubtask(subtask6, TaskStatus.DONE);
+        taskManager.updateSubtaskStatus(subtask4, TaskStatus.DONE);
+        taskManager.updateSubtaskStatus(subtask5, TaskStatus.DONE);
+        taskManager.updateSubtaskStatus(subtask6, TaskStatus.DONE);
 
         FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
-        Epic loaderEpic = loaderManager.getEpicById(epicID);
-        Epic loaderEpic2 = loaderManager.getEpicById(epicID2);
-        Epic loaderEpic3 = loaderManager.getEpicById(epicID3);
+        Epic loaderEpic = loaderManager.getEpicById(epicID)
+                .orElseThrow(() -> new IllegalArgumentException("Epic c ID: " + epicID + " не найден"));
+        Epic loaderEpic2 = loaderManager.getEpicById(epicID2)
+                .orElseThrow(() -> new IllegalArgumentException("Epic c ID: " + epicID2 + " не найден"));
+        Epic loaderEpic3 = loaderManager.getEpicById(epicID3)
+                .orElseThrow(() -> new IllegalArgumentException("Epic c ID: " + epicID3 + " не найден"));
+
 
         //Then
         assertEquals(TaskStatus.IN_PROGRESS, loaderEpic.getStatus(), "Статус восстановился не верно");
@@ -105,4 +129,39 @@ class FileBackedTaskManagerTest {
         assertEquals(TaskStatus.NEW, loaderEpic3.getStatus(), "Статус восстановился не верно");
 
     }
+
+    @DisplayName("Менеджер после загрузки восстанавливает сортировку и TimeControl")
+    @Test
+    void shouldRestoreSortedListAndTimeControl_whenManagerLoaded() {
+        //Given
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(testFile);
+
+        Task task = taskManager.createNewTask("Задача 1", "Информация 1");
+        taskManager.setTimeTask(task, LocalDateTime.of(2025, 1, 1, 0, 0),
+                Duration.ofHours(1));
+        Epic epic = taskManager.createNewEpic("Epic 1", "Информация 1");
+        Subtask subtask = taskManager.createNewSubtask("Подзадача 1", "Информация 1", epic.getTaskId());
+        taskManager.setTimeTask(subtask, LocalDateTime.of(2025, 1, 2, 0, 0),
+                Duration.ofHours(1));
+
+        //When
+        FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
+
+        //Then
+        assertTrue(loaderManager.getPrioritizedTasks().contains(task), "Задача не восстановилась в сортировке");
+        assertTrue(loaderManager.getPrioritizedTasks().contains(epic), "Задача не восстановилась в сортировке");
+        assertTrue(loaderManager.getPrioritizedTasks().contains(subtask), "Задача не восстановилась в сортировке");
+
+        assertEquals(loaderManager.getPrioritizedTasks().getFirst(), task, "Сортировка сбилась");
+        assertEquals(loaderManager.getPrioritizedTasks().getLast(), subtask, "Сортировка сбилась");
+
+        Assertions.assertThrows(TimeConflictException.class, () -> loaderManager.setTimeTask(task,
+                        LocalDateTime.of(2025, 1, 2, 0, 0), Duration.ofHours(1)),
+                "TimeControl не восстановился");
+        Assertions.assertDoesNotThrow(() -> loaderManager.setTimeTask(task,
+                        LocalDateTime.of(2025, 1, 3, 0, 0), Duration.ofHours(1)),
+                "TimeControl не восстановился");
+
+    }
+
 }

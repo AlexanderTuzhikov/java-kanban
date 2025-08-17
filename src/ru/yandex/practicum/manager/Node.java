@@ -4,7 +4,7 @@ import ru.yandex.practicum.tasks.Task;
 
 public class Node {
     private Node prevNode;
-    private Task actualTask;
+    private final Task actualTask;
     private Node nextNode;
 
     public Node(Node prevNode, Task actualTask, Node nextNode) {
@@ -23,10 +23,6 @@ public class Node {
 
     public Task getActualTask() {
         return actualTask;
-    }
-
-    public void setActualTask(Task actualTask) {
-        this.actualTask = actualTask;
     }
 
     public Node getNextNode() {
