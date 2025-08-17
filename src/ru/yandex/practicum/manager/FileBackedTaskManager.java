@@ -1,6 +1,5 @@
 package ru.yandex.practicum.manager;
 
-import org.jetbrains.annotations.NotNull;
 import ru.yandex.practicum.tasks.*;
 
 import java.io.*;
@@ -27,7 +26,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public static @NotNull FileBackedTaskManager loadFromFile(Path saveFile) {
+    public static FileBackedTaskManager loadFromFile(Path saveFile) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(saveFile);
         int loadActualId = 0;
 
