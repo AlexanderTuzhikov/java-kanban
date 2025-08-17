@@ -140,7 +140,8 @@ class FileBackedTaskManagerTest {
         taskManager.setTimeTask(task, LocalDateTime.of(2025, 1, 1, 0, 0),
                 Duration.ofHours(1));
         Epic epic = taskManager.createNewEpic("Epic 1", "Информация 1");
-        Subtask subtask = taskManager.createNewSubtask("Подзадача 1", "Информация 1", epic.getTaskId());
+        Subtask subtask = taskManager.createNewSubtask("Подзадача 1", "Информация 1",
+                epic.getTaskId());
         taskManager.setTimeTask(subtask, LocalDateTime.of(2025, 1, 2, 0, 0),
                 Duration.ofHours(1));
 
@@ -150,7 +151,8 @@ class FileBackedTaskManagerTest {
         //Then
         assertTrue(loaderManager.getPrioritizedTasks().contains(task), "Задача не восстановилась в сортировке");
         assertTrue(loaderManager.getPrioritizedTasks().contains(epic), "Задача не восстановилась в сортировке");
-        assertTrue(loaderManager.getPrioritizedTasks().contains(subtask), "Задача не восстановилась в сортировке");
+        assertTrue(loaderManager.getPrioritizedTasks().contains(subtask),
+                "Задача не восстановилась в сортировке");
 
         assertEquals(loaderManager.getPrioritizedTasks().getFirst(), task, "Сортировка сбилась");
         assertEquals(loaderManager.getPrioritizedTasks().getLast(), subtask, "Сортировка сбилась");

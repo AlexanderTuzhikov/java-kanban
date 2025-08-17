@@ -41,8 +41,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
 
-                Task task = fromString(line).
-                        orElseThrow(() -> new NullPointerException("Передана пустая задача"));
+                Task task = fromString(line)
+                        .orElseThrow(() -> new NullPointerException("Передана пустая задача"));
                 Type type = task.getType();
                 int taskId = task.getTaskId();
 
