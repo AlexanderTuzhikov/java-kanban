@@ -22,12 +22,9 @@ class EpicTest {
         String TASK_INFO = Stubs.testEpic1.getTaskInfo();
 
         //Then
-        assertEquals(EPIC_ID, TEST_EPIC_ID,
-                "ID задачи не верен");
-        assertEquals(TASK_NAME, TASK_NAME_TEST,
-                "Имя задачи не верно");
-        assertEquals(TASK_INFO, TEST_TASK_INFO,
-                "Информация о задаче не верна");
+        assertEquals(TEST_EPIC_ID, EPIC_ID, "ID задачи не верен");
+        assertEquals(TASK_NAME_TEST, TASK_NAME, "Имя задачи не верно");
+        assertEquals(TEST_TASK_INFO, TASK_INFO, "Информация о задаче не верна");
     }
 
     @DisplayName("Метод изменения статуса задач работает корректно")
@@ -40,8 +37,7 @@ class EpicTest {
         Stubs.testEpic2.setStatus(TaskStatus.IN_PROGRESS);
 
         //Then
-        assertEquals(Stubs.testEpic2.getStatus(), TEST_TASK_STATUS,
-                "Установка статуса работает не корректно");
+        assertEquals(TEST_TASK_STATUS, Stubs.testEpic2.getStatus(), "Установка статуса работает не корректно");
     }
 
     @DisplayName("Методы изменения имени и дополнительной информации для задач работают корректно")
@@ -56,9 +52,9 @@ class EpicTest {
         Stubs.testEpic3.setTaskInfo("New Test Info");
 
         //Then
-        assertEquals(Stubs.testEpic3.getTaskName(), TEST_TASK_NAME
-                , "Установка нового имени работает не корректно");
-        assertEquals(Stubs.testEpic3.getTaskInfo(), TEST_TASK_INFO,
+        assertEquals(TEST_TASK_NAME, Stubs.testEpic3.getTaskName(),
+                "Установка нового имени работает не корректно");
+        assertEquals(TEST_TASK_INFO, Stubs.testEpic3.getTaskInfo(),
                 "Установка новой информации работает не корректно");
     }
 

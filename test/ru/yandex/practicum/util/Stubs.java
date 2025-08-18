@@ -6,9 +6,9 @@ import ru.yandex.practicum.tasks.Task;
 
 public class Stubs {
 
-    public  static Task testTask1 = new Task(1, "testName1", "TestInfo1");
-    public  static Task testTask2 = new Task(1, "testName2", "TestInfo2");
-    public  static Task testTask3 = new Task(3, "testName3", "TestInfo3");
+    public static Task testTask1 = new Task(1, "testName1", "TestInfo1");
+    public static Task testTask2 = new Task(1, "testName2", "TestInfo2");
+    public static Task testTask3 = new Task(3, "testName3", "TestInfo3");
 
     public static Epic testEpic1 = new Epic(1, "testName1", "TestInfo1");
     public static Epic testEpic2 = new Epic(1, "testName2", "TestInfo2");

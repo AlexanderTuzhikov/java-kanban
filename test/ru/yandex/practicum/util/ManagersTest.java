@@ -6,6 +6,7 @@ import ru.yandex.practicum.manager.TaskManager;
 import ru.yandex.practicum.tasks.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,9 +43,9 @@ class ManagersTest {
         assertNotNull(TEST_MANAGER.getAllEpic(), "Epic не добавляются");
 
         //When
-        Epic epic = TEST_MANAGER.getEpicById(2);
+        Optional<Epic> epic = TEST_MANAGER.getEpicById(2);
         //Then
-        assertEquals(epic.getTaskId(), 2, "Метод получения ID задачи не работает");
+        assertEquals(2, epic.map(Epic::getTaskId).orElseThrow(), "Метод получения ID задачи не работает");
 
         //When
         TEST_MANAGER.createNewSubtask("TEST_MANAGER name", "TEST_MANAGER info", 2);

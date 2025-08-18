@@ -1,5 +1,8 @@
 package ru.yandex.practicum.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -9,22 +12,47 @@ public class Task {
     protected String taskName;
     protected TaskStatus status;
     protected String taskInfo;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(int taskId, String taskName, String taskInfo) {
         this.taskId = taskId;
-        type = Type.TASK;
+        type = ru.yandex.practicum.tasks.Type.TASK;
         this.taskName = taskName;
         this.taskInfo = taskInfo;
         status = TaskStatus.NEW;
     }
 
-    public Task(int taskId, Type type, String taskName, TaskStatus taskStatus, String taskInfo) {
+    public Task(int taskId, Type type, String taskName, TaskStatus taskStatus, String taskInfo, Duration duration,
+                LocalDateTime startTime) {
         this.taskId = taskId;
         this.type = type;
         this.taskName = taskName;
         this.status = taskStatus;
         this.taskInfo = taskInfo;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
 
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) return null;
+        return startTime.plusMinutes(duration.toMinutes());
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
     public Type getType() {
@@ -75,6 +103,38 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s", taskId, type, taskName, status, taskInfo);
+        DateTimeFormatter formatterStart = DateTimeFormatter.ofPattern("Начало: dd.MM.yy HH:mm");
+        DateTimeFormatter formatterEnd = DateTimeFormatter.ofPattern("Завершение: dd.MM.yy HH:mm");
+
+        String formatDuration = duration != null ? "\nВыполнение: " + duration.toHours() + " часов " +
+                duration.toMinutesPart() + " минут" : "Выполнение " + "0";
+        String formatStartTime = startTime != null ? startTime.format(formatterStart) : "Не установлено";
+        String formatEndTime = getEndTime() != null ? getEndTime().format(formatterEnd) : "Не установлено";
+
+        return String.format("""
+                        --------------------------------
+                        ID задачи: %s
+                        Тип задачи: %s
+                        Статус: %s
+                        Название: %s
+                        Информация:%s
+                        Выполнение: %s
+                        Начало: %s
+                        Конец: %s
+                        --------------------------------
+                        """,
+                taskId,
+                type,
+                status,
+                taskName,
+                taskInfo,
+                formatDuration,
+                formatStartTime,
+                formatEndTime);
+    }
+
+    public String toCvs() {
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s", taskId, type, taskName, status, taskInfo, "null",
+                duration, startTime, getEndTime());
     }
 }

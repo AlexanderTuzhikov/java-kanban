@@ -1,5 +1,7 @@
-package ru.yandex.practicum.manager;
+package ru.yandex.practicum.manager.impl;
 
+import ru.yandex.practicum.manager.HistoryManager;
+import ru.yandex.practicum.manager.Node;
 import ru.yandex.practicum.tasks.Task;
 
 import java.util.*;
@@ -12,21 +14,20 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (task != null) {
-            int id = task.getTaskId();
+        Objects.requireNonNull(task, "Задача не может быть null");
 
-            if (history.containsKey(id)) {
-                remove(id);
-            }
+        int id = task.getTaskId();
 
-            linkLast(task);
+        if (history.containsKey(id)) {
+            remove(id);
         }
+
+        linkLast(task);
     }
 
     private void linkLast(Task task) {
-        if (task == null) {
-            return;
-        }
+        Objects.requireNonNull(task, "Задача не может быть null");
+
         Integer id = task.getTaskId();
 
         if (tail == null) {

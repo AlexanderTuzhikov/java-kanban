@@ -1,5 +1,8 @@
 package ru.yandex.practicum.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Subtask extends Task {
@@ -11,8 +14,9 @@ public class Subtask extends Task {
         this.type = Type.SUBTASK;
     }
 
-    public Subtask(int taskId, Type type, String taskName, TaskStatus status, String taskInfo, int epicId) {
-        super(taskId, type, taskName, status, taskInfo);
+    public Subtask(int taskId, Type type, String taskName, TaskStatus status, String taskInfo, int epicId,
+                   Duration duration, LocalDateTime startTime) {
+        super(taskId, type, taskName, status, taskInfo, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -34,6 +38,41 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s", getTaskId(), type, taskName, status, taskInfo, epicId);
+        DateTimeFormatter formatterStart = DateTimeFormatter.ofPattern("Начало: dd.MM.yy HH:mm");
+        DateTimeFormatter formatterEnd = DateTimeFormatter.ofPattern("Завершение: dd.MM.yy HH:mm");
+
+        String formatDuration = duration != null ? "\nВыполнение: " + duration.toHours() + " часов " +
+                duration.toMinutesPart() + " минут" : "Выполнение " + "0";
+        String formatStartTime = startTime != null ? startTime.format(formatterStart) : "Не установлено";
+        String formatEndTime = getEndTime() != null ? getEndTime().format(formatterEnd) : "Не установлено";
+
+        return String.format("""
+                        --------------------------------
+                        ID задачи: %s
+                        ID Epic: %s
+                        Тип задачи: %s
+                        Статус: %s
+                        Название: %s
+                        Информация:%s
+                        Выполнение: %s
+                        Начало: %s
+                        Конец: %s
+                        --------------------------------
+                        """,
+                getTaskId(),
+                epicId,
+                type,
+                status,
+                taskName,
+                taskInfo,
+                formatDuration,
+                formatStartTime,
+                formatEndTime);
+    }
+
+    @Override
+    public String toCvs() {
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s", getTaskId(), type, taskName, status, taskInfo, epicId,
+                duration, startTime, getEndTime());
     }
 }
