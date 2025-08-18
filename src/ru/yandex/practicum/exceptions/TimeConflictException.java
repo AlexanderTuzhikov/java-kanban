@@ -1,4 +1,4 @@
-package ru.yandex.practicum.manager;
+package ru.yandex.practicum.exceptions;
 
 public class TimeConflictException extends RuntimeException {
 

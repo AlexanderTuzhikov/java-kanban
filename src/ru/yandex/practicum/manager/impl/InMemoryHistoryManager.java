@@ -1,5 +1,7 @@
-package ru.yandex.practicum.manager;
+package ru.yandex.practicum.manager.impl;
 
+import ru.yandex.practicum.manager.HistoryManager;
+import ru.yandex.practicum.manager.Node;
 import ru.yandex.practicum.tasks.Task;
 
 import java.util.*;

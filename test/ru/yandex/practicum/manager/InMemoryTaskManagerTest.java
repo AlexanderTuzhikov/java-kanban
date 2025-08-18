@@ -1,6 +1,7 @@
 package ru.yandex.practicum.manager;
 
 import org.junit.jupiter.api.*;
+import ru.yandex.practicum.exceptions.TimeConflictException;
 import ru.yandex.practicum.tasks.*;
 import ru.yandex.practicum.util.Managers;
 
