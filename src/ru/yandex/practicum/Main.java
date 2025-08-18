@@ -1,6 +1,6 @@
 package ru.yandex.practicum;
 
-import ru.yandex.practicum.manager.FileBackedTaskManager;
+import ru.yandex.practicum.manager.impl.FileBackedTaskManager;
 import ru.yandex.practicum.tasks.Subtask;
 import ru.yandex.practicum.tasks.Task;
 import ru.yandex.practicum.tasks.TaskStatus;
@@ -13,7 +13,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Main {
-    static void main() throws IOException {
+    static void main(String[] args) throws IOException {
 
         Path testFile = Files.createTempFile("TEST", ".csv");
 
