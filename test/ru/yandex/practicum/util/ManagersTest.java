@@ -31,24 +31,26 @@ class ManagersTest {
         assertNotNull(TEST_HISTORY_MANAGER, "Объект создан пустым!");
 
         //When
-        TEST_MANAGER.createNewTask("TEST_MANAGER name", "TEST_MANAGER info");
+        TEST_MANAGER.createTask(new Task("TEST_MANAGER name", "TEST_MANAGER info", TaskStatus.NEW));
 
         //Then
         assertNotNull(TEST_MANAGER.getAllTask(), "Задачи не добавляются");
 
         //When
-        TEST_MANAGER.createNewEpic("TEST_MANAGER name", "TEST_MANAGER info");
+        TEST_MANAGER.createEpic(new Epic("TEST_MANAGER name", "TEST_MANAGER info", TaskStatus.NEW));
 
         //Then
         assertNotNull(TEST_MANAGER.getAllEpic(), "Epic не добавляются");
 
         //When
         Optional<Epic> epic = TEST_MANAGER.getEpicById(2);
+        System.out.println(TEST_MANAGER.getAllEpic());
         //Then
         assertEquals(2, epic.map(Epic::getTaskId).orElseThrow(), "Метод получения ID задачи не работает");
 
         //When
-        TEST_MANAGER.createNewSubtask("TEST_MANAGER name", "TEST_MANAGER info", 2);
+        TEST_MANAGER.createSubtask(new Subtask("TEST_MANAGER name", "TEST_MANAGER info", TaskStatus.NEW,
+                2));
 
         //Then
         assertNotNull(TEST_MANAGER.getAllSubtaskTask(), "Подзадачи не добавляются");

@@ -8,13 +8,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
 
-    Task testTask = new Task(1, "testName", "testInfo");
+    Task testTask = new Task("testName", "testInfo", TaskStatus.NEW);
 
     @DisplayName("Поля задач проинициализированы верно при создании")
     @Test
     void test_Task_Fields_Are_Initialized_Correctly_Test() {
         //Given
-        int TEST_ID = 1;
+        int TEST_ID = 0;
         String TEST_NAME = "testName";
         String TEST_INFO = "testInfo";
 

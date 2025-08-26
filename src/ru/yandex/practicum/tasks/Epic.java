@@ -11,15 +11,9 @@ public class Epic extends Task {
     private final HashMap<Integer, Subtask> subtaskForEpic = new HashMap<>();
     private LocalDateTime endTime;
 
-    public Epic(int taskId, String taskName, String taskInfo) {
-        super(taskId, taskName, taskInfo);
+    public Epic(String taskName, String taskInfo, TaskStatus status) {
+        super(taskName, taskInfo, status);
         this.type = Type.EPIC;
-    }
-
-    public Epic(int taskId, Type type, String taskName, TaskStatus status, String taskInfo, Duration duration,
-                LocalDateTime startTime, LocalDateTime endTime) {
-        super(taskId, type, taskName, status, taskInfo, duration, startTime);
-        this.endTime = endTime;
     }
 
     public HashMap<Integer, Subtask> getSubtaskForEpic() {
@@ -69,7 +63,7 @@ public class Epic extends Task {
         DateTimeFormatter formatterStart = DateTimeFormatter.ofPattern("Начало: dd.MM.yy HH:mm");
         DateTimeFormatter formatterEnd = DateTimeFormatter.ofPattern("Завершение: dd.MM.yy HH:mm");
 
-        String formatDuration = duration != null ? "\nВыполнение: " + duration.toHours() + " часов " +
+        String formatDuration = duration != null ? duration.toHours() + " часов " +
                 duration.toMinutesPart() + " минут" : "Выполнение " + "0";
         String formatStartTime = startTime != null ? startTime.format(formatterStart) : "Не установлено";
         String formatEndTime = endTime != null ? endTime.format(formatterEnd) : "Не установлено";

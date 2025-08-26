@@ -38,11 +38,12 @@ class FileBackedTaskManagerTest {
         //Given
         FileBackedTaskManager taskManager = new FileBackedTaskManager(testFile);
 
-        Task task = taskManager.createNewTask("Задача 1", "Информация 1");
+        Task task = taskManager.createTask(new Task("Задача 1",  "Информация 1", TaskStatus.NEW));
         int taskID = task.getTaskId();
-        Epic epic = taskManager.createNewEpic("Epic 1", "Информация 1");
+        Epic epic = taskManager.createEpic(new Epic("Epic 1", "Информация 1", TaskStatus.NEW));
         int epicID = epic.getTaskId();
-        Subtask subtask = taskManager.createNewSubtask("Подзадача 1", "Информация 1", epicID);
+        Subtask subtask = taskManager.createSubtask(new Subtask("Подзадача 1", "Информация 1",
+                TaskStatus.NEW, epicID));
         int subtaskID = subtask.getTaskId();
 
         //When
@@ -56,7 +57,8 @@ class FileBackedTaskManagerTest {
                 .orElse(new HashMap<>());
 
         Subtask subtaskEpic = subtaskMap.get(subtaskID);
-        Task loaderTask2 = loaderManager.createNewTask("Задача 2", "Информация 2");
+        Task loaderTask2 = loaderManager.createTask(new Task("Задача 2", "Информация 2",
+                TaskStatus.NEW));
         int loaderTask2ID = loaderTask2.getTaskId();
 
 
@@ -92,29 +94,40 @@ class FileBackedTaskManagerTest {
         //Given
         FileBackedTaskManager taskManager = new FileBackedTaskManager(testFile);
 
-        Epic epic = taskManager.createNewEpic("Epic 1", "Информация 1");
+        Epic epic = taskManager.createEpic(new Epic("Epic 1", "Информация 1", TaskStatus.NEW));
         int epicID = epic.getTaskId();
-        Subtask subtask1 = taskManager.createNewSubtask("Подзадача 1", "Информация 1", epicID);
-        Subtask subtask2 = taskManager.createNewSubtask("Подзадача 2", "Информация 2", epicID);
-        Subtask subtask3 = taskManager.createNewSubtask("Подзадача 3", "Информация 3", epicID);
+        Subtask subtask1 = taskManager.createSubtask(new Subtask("Подзадача 1", "Информация 1",
+                TaskStatus.NEW, epicID));
+        Subtask subtask2 = taskManager.createSubtask(new Subtask("Подзадача 2", "Информация 2",
+                TaskStatus.NEW, epicID));
+        Subtask subtask3 = taskManager.createSubtask(new Subtask("Подзадача 3", "Информация 3",
+                TaskStatus.NEW, epicID));
 
-        Epic epic2 = taskManager.createNewEpic("Epic 1", "Информация 1");
+        Epic epic2 = taskManager.createEpic(new Epic("Epic 1", "Информация 1", TaskStatus.NEW));
         int epicID2 = epic2.getTaskId();
-        Subtask subtask4 = taskManager.createNewSubtask("Подзадача 4", "Информация 4", epicID2);
-        Subtask subtask5 = taskManager.createNewSubtask("Подзадача 5", "Информация 5", epicID2);
-        Subtask subtask6 = taskManager.createNewSubtask("Подзадача 6", "Информация 6", epicID2);
+        Subtask subtask4 = taskManager.createSubtask(new Subtask("Подзадача 4", "Информация 4",
+                TaskStatus.NEW, epicID2));
+        Subtask subtask5 = taskManager.createSubtask(new Subtask("Подзадача 5", "Информация 5",
+                TaskStatus.NEW, epicID2));
+        Subtask subtask6 = taskManager.createSubtask(new Subtask("Подзадача 6", "Информация 6",
+                TaskStatus.NEW, epicID2));
 
-        Epic epic3 = taskManager.createNewEpic("Epic 7", "Информация 7");
+        Epic epic3 = taskManager.createEpic(new Epic("Epic 7", "Информация 7", TaskStatus.NEW));
         int epicID3 = epic3.getTaskId();
 
         //When
-        taskManager.updateSubtaskStatus(subtask1, TaskStatus.IN_PROGRESS);
-        taskManager.updateSubtaskStatus(subtask2, TaskStatus.IN_PROGRESS);
-        taskManager.updateSubtaskStatus(subtask3, TaskStatus.DONE);
-
-        taskManager.updateSubtaskStatus(subtask4, TaskStatus.DONE);
-        taskManager.updateSubtaskStatus(subtask5, TaskStatus.DONE);
-        taskManager.updateSubtaskStatus(subtask6, TaskStatus.DONE);
+        subtask1.setStatus(TaskStatus.IN_PROGRESS);
+        taskManager.updateSubtask(subtask1);
+        subtask2.setStatus(TaskStatus.IN_PROGRESS);
+        taskManager.updateSubtask(subtask2);
+        subtask3.setStatus(TaskStatus.DONE);
+        taskManager.updateSubtask(subtask3);
+        subtask4.setStatus(TaskStatus.DONE);
+        taskManager.updateSubtask(subtask4);
+        subtask5.setStatus(TaskStatus.DONE);
+        taskManager.updateSubtask(subtask5);
+        subtask6.setStatus(TaskStatus.DONE);
+        taskManager.updateSubtask(subtask6);
 
         FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
         Epic loaderEpic = loaderManager.getEpicById(epicID)
@@ -138,14 +151,13 @@ class FileBackedTaskManagerTest {
         //Given
         FileBackedTaskManager taskManager = new FileBackedTaskManager(testFile);
 
-        Task task = taskManager.createNewTask("Задача 1", "Информация 1");
-        taskManager.setTimeTask(task, LocalDateTime.of(2025, 1, 1, 0, 0),
-                Duration.ofHours(1));
-        Epic epic = taskManager.createNewEpic("Epic 1", "Информация 1");
-        Subtask subtask = taskManager.createNewSubtask("Подзадача 1", "Информация 1",
-                epic.getTaskId());
-        taskManager.setTimeTask(subtask, LocalDateTime.of(2025, 1, 2, 0, 0),
-                Duration.ofHours(1));
+        Task task = taskManager.createTask(new Task("Задача 1", "Информация 1", TaskStatus.NEW,
+                LocalDateTime.of(2025, 1, 1, 0, 0), Duration.ofHours(1)));
+        Epic epic = taskManager.createEpic(new Epic("Epic 1", "Информация 1", TaskStatus.NEW));
+        Subtask subtask = taskManager.createSubtask(new Subtask("Подзадача 1", "Информация 1", TaskStatus.NEW,
+                epic.getTaskId(),
+                LocalDateTime.of(2025, 1, 2, 0, 0), Duration.ofHours(1)));
+
 
         //When
         FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
@@ -159,11 +171,16 @@ class FileBackedTaskManagerTest {
         assertEquals(loaderManager.getPrioritizedTasks().getFirst(), task, "Сортировка сбилась");
         assertEquals(loaderManager.getPrioritizedTasks().getLast(), subtask, "Сортировка сбилась");
 
-        Assertions.assertThrows(TimeConflictException.class, () -> loaderManager.setTimeTask(task,
-                        LocalDateTime.of(2025, 1, 2, 0, 0), Duration.ofHours(1)),
+        task.setStartTime(LocalDateTime.of(2025, 1, 2, 0, 0));
+        task.setDuration(Duration.ofHours(1));
+
+        Assertions.assertThrows(TimeConflictException.class, () -> loaderManager.updateTask(task),
                 "TimeControl не восстановился");
-        Assertions.assertDoesNotThrow(() -> loaderManager.setTimeTask(task,
-                        LocalDateTime.of(2025, 1, 3, 0, 0), Duration.ofHours(1)),
+
+        task.setStartTime(LocalDateTime.of(2025, 1, 3, 0, 0));
+        task.setDuration(Duration.ofHours(1));
+
+        Assertions.assertDoesNotThrow(() -> loaderManager.updateTask(task),
                 "TimeControl не восстановился");
 
     }

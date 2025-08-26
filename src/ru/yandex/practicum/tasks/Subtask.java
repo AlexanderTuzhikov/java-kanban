@@ -8,15 +8,16 @@ import java.util.Objects;
 public class Subtask extends Task {
     private final int epicId;
 
-    public Subtask(int taskId, String taskName, String taskInfo, int epicId) {
-        super(taskId, taskName, taskInfo);
+    public Subtask(String taskName, String taskInfo, TaskStatus status, int epicId) {
+        super(taskName, taskInfo, status);
         this.epicId = epicId;
         this.type = Type.SUBTASK;
     }
 
-    public Subtask(int taskId, Type type, String taskName, TaskStatus status, String taskInfo, int epicId,
-                   Duration duration, LocalDateTime startTime) {
-        super(taskId, type, taskName, status, taskInfo, duration, startTime);
+    public Subtask(String taskName, String taskInfo, TaskStatus status, int epicId,
+                   LocalDateTime startTime, Duration duration) {
+        super(taskName, taskInfo, status, startTime, duration);
+        type = Type.SUBTASK;
         this.epicId = epicId;
     }
 
@@ -41,7 +42,7 @@ public class Subtask extends Task {
         DateTimeFormatter formatterStart = DateTimeFormatter.ofPattern("Начало: dd.MM.yy HH:mm");
         DateTimeFormatter formatterEnd = DateTimeFormatter.ofPattern("Завершение: dd.MM.yy HH:mm");
 
-        String formatDuration = duration != null ? "\nВыполнение: " + duration.toHours() + " часов " +
+        String formatDuration = duration != null ? duration.toHours() + " часов " +
                 duration.toMinutesPart() + " минут" : "Выполнение " + "0";
         String formatStartTime = startTime != null ? startTime.format(formatterStart) : "Не установлено";
         String formatEndTime = getEndTime() != null ? getEndTime().format(formatterEnd) : "Не установлено";

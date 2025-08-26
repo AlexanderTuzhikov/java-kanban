@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Task {
 
-    private final int taskId;
+    private int taskId;
     protected Type type;
     protected String taskName;
     protected TaskStatus status;
@@ -15,23 +15,20 @@ public class Task {
     protected Duration duration;
     protected LocalDateTime startTime;
 
-    public Task(int taskId, String taskName, String taskInfo) {
-        this.taskId = taskId;
-        type = ru.yandex.practicum.tasks.Type.TASK;
+    public Task(String taskName, String taskInfo, TaskStatus status) {
+        type = Type.TASK;
         this.taskName = taskName;
         this.taskInfo = taskInfo;
-        status = TaskStatus.NEW;
+        this.status = status;
     }
 
-    public Task(int taskId, Type type, String taskName, TaskStatus taskStatus, String taskInfo, Duration duration,
-                LocalDateTime startTime) {
-        this.taskId = taskId;
-        this.type = type;
+    public Task(String taskName, String taskInfo, TaskStatus status, LocalDateTime startTime, Duration duration) {
+        type = Type.TASK;
         this.taskName = taskName;
-        this.status = taskStatus;
         this.taskInfo = taskInfo;
-        this.duration = duration;
+        this.status = status;
         this.startTime = startTime;
+        this.duration = duration;
     }
 
     public LocalDateTime getEndTime() {
@@ -75,6 +72,10 @@ public class Task {
         this.taskInfo = taskInfo;
     }
 
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
+
     public int getTaskId() {
         return taskId;
     }
@@ -106,7 +107,7 @@ public class Task {
         DateTimeFormatter formatterStart = DateTimeFormatter.ofPattern("Начало: dd.MM.yy HH:mm");
         DateTimeFormatter formatterEnd = DateTimeFormatter.ofPattern("Завершение: dd.MM.yy HH:mm");
 
-        String formatDuration = duration != null ? "\nВыполнение: " + duration.toHours() + " часов " +
+        String formatDuration = duration != null ?  duration.toHours() + " часов " +
                 duration.toMinutesPart() + " минут" : "Выполнение " + "0";
         String formatStartTime = startTime != null ? startTime.format(formatterStart) : "Не установлено";
         String formatEndTime = getEndTime() != null ? getEndTime().format(formatterEnd) : "Не установлено";

@@ -37,10 +37,10 @@ class InMemoryTaskManagerTest {
         Subtask testSubtask1;
 
         //When
-        testTask1 = taskManager.createNewTask("Test name", "Test info");
-        testEpic1 = taskManager.createNewEpic("Test name", "Test info");
-        testSubtask1 = taskManager.createNewSubtask("Test name", "Test info",
-                testEpic1.getTaskId());
+        testTask1 = taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW));
+        testEpic1 = taskManager.createEpic(new Epic("Test name", "Test info", TaskStatus.NEW));
+        testSubtask1 = taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW,
+                testEpic1.getTaskId()));
 
 
         //Then
@@ -48,7 +48,7 @@ class InMemoryTaskManagerTest {
         assertNotNull(testSubtask1, "Подзадача создана некорректно");
         assertNotNull(testEpic1, "Epic создан некорректно");
         Assertions.assertThrows(IllegalArgumentException.class, () ->
-                        taskManager.createNewSubtask("Test name", "Test info", 10),
+                        taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW, 10)),
                 "Не должна быть создана");
     }
 
@@ -62,16 +62,14 @@ class InMemoryTaskManagerTest {
         Subtask testSubtask2;
 
         //When
-        testTask1 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask1, TEST_DATE_TIME, TEST_DURATION);
-        testEpic1 = taskManager.createNewEpic("Test name", "Test info");
-        testSubtask1 = taskManager.createNewSubtask("Test name", "Test info",
-                testEpic1.getTaskId());
-        taskManager.setTimeTask(testSubtask1, TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION);
-        testSubtask2 = taskManager.createNewSubtask("Test name", "Test info", testEpic1.getTaskId());
-        taskManager.setTimeTask(testSubtask2, TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME.plus(TEST_DURATION)),
-                TEST_DURATION.plus(TEST_CORRECT_DURATION));
-
+        testTask1 = taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME, TEST_DURATION));
+        testEpic1 = taskManager.createEpic(new Epic("Test name", "Test info", TaskStatus.NEW));
+        testSubtask1 = taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW,
+                testEpic1.getTaskId(), TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION));
+        testSubtask2 = taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW,
+                testEpic1.getTaskId(), TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME.plus(TEST_DURATION)), TEST_DURATION.plus(TEST_CORRECT_DURATION)
+        ));
 
         //Then
         assertEquals(TEST_DATE_TIME, testTask1.getStartTime(),
@@ -98,13 +96,12 @@ class InMemoryTaskManagerTest {
         Subtask testSubtask2;
 
         //When
-        testEpic1 = taskManager.createNewEpic("Test name", "Test info");
-        testSubtask1 = taskManager.createNewSubtask("Test name", "Test info",
-                testEpic1.getTaskId());
-        taskManager.setTimeTask(testSubtask1, TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION);
-        testSubtask2 = taskManager.createNewSubtask("Test name", "Test info", testEpic1.getTaskId());
-        taskManager.setTimeTask(testSubtask2, TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME.plus(TEST_DURATION)),
-                TEST_DURATION.plus(TEST_CORRECT_DURATION));
+        testEpic1 = taskManager.createEpic(new Epic("Test name", "Test info", TaskStatus.NEW));
+        testSubtask1 = taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW,
+                testEpic1.getTaskId(), TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION));
+        testSubtask2 = taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW,
+                testEpic1.getTaskId(), TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME.plus(TEST_DURATION)), TEST_DURATION.plus(TEST_CORRECT_DURATION)
+        ));
         taskManager.removeSubtaskById(testSubtask1.getTaskId());
 
 
@@ -122,16 +119,15 @@ class InMemoryTaskManagerTest {
     void givenOverlappingTasks_whenTimeSet_thenConflictDetected() {
         //Given
         Task testTask1;
-        Task testTask2;
 
         //When
-        testTask1 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask1, TEST_DATE_TIME, TEST_DURATION);
-        testTask2 = taskManager.createNewTask("Test name", "Test info");
+        testTask1 = taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME, TEST_DURATION));
 
         //Then
         Assertions.assertThrows(TimeConflictException.class,
-                () -> taskManager.setTimeTask(testTask2, TEST_DATE_TIME, TEST_DURATION),
+                () -> taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW,
+                        TEST_DATE_TIME, TEST_DURATION)),
                 "Должен быть конфликт");
     }
 
@@ -140,17 +136,16 @@ class InMemoryTaskManagerTest {
     void givenTaskWithTimeSlot_whenTaskDeleted_thenSlotIsFreed() {
         //Given
         Task testTask1;
-        Task testTask2;
 
         //When
-        testTask1 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask1, TEST_DATE_TIME, TEST_DURATION);
-        testTask2 = taskManager.createNewTask("Test name", "Test info");
+        testTask1 = taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME, TEST_DURATION));
         taskManager.removeTaskById(testTask1.getTaskId());
 
         //Then
         Assertions.assertDoesNotThrow(
-                () -> taskManager.setTimeTask(testTask2, TEST_DATE_TIME, TEST_DURATION),
+                () -> taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW,
+                        TEST_DATE_TIME, TEST_DURATION)),
                 "Конфликта быть не должно  быть конфликт");
     }
 
@@ -163,12 +158,12 @@ class InMemoryTaskManagerTest {
         Task testTask3;
 
         //When
-        testTask1 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask1, TEST_DATE_TIME, TEST_DURATION);
-        testTask2 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask2, TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION);
-        testTask3 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask3, TEST_DATE_TIME.plusDays(2), TEST_DURATION);
+        testTask1 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME, TEST_DURATION));
+        testTask2 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION));
+        testTask3 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME.plusDays(2), TEST_DURATION));
         List<Task> sortedList = taskManager.getPrioritizedTasks();
 
         //Then
@@ -185,12 +180,12 @@ class InMemoryTaskManagerTest {
         Task testTask3;
 
         //When
-        testTask1 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask1, TEST_DATE_TIME, TEST_DURATION);
-        testTask2 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask2, TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION);
-        testTask3 = taskManager.createNewTask("Test name", "Test info");
-        taskManager.setTimeTask(testTask3, TEST_DATE_TIME.plusDays(2), TEST_DURATION);
+        testTask1 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME, TEST_DURATION));
+        testTask2 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION));
+        testTask3 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
+                TEST_DATE_TIME.plusDays(2), TEST_DURATION));
 
         taskManager.removeTaskById(testTask1.getTaskId());
 
@@ -209,17 +204,14 @@ class InMemoryTaskManagerTest {
         Task testTask1;
 
         //When
-        testEpic1 = taskManager.createNewEpic("Test name", "Test info");
-        taskManager.setTimeTask(testEpic1, TEST_DATE_TIME, TEST_DURATION);
-        testSubtask2 = taskManager.createNewSubtask("Test name", "Test info",
-                testEpic1.getTaskId());
-        taskManager.setTimeTask(testSubtask2, TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION);
-        testSubtask3 = taskManager.createNewSubtask("Test name", "Test info",
-                testEpic1.getTaskId());
-        taskManager.setTimeTask(testSubtask3, TEST_DATE_TIME.plusDays(2), TEST_DURATION);
-        testTask1 = taskManager.createNewTask("Test name", "Test info");
-
+        testEpic1 = taskManager.createEpic(new Epic("Test name", "Test info", TaskStatus.NEW));
+        testSubtask2 = taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW,
+                testEpic1.getTaskId(), TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION));
+        testSubtask3 = taskManager.createSubtask(new Subtask("Test name", "Test info", TaskStatus.NEW,
+                testEpic1.getTaskId(), TEST_DATE_TIME.plusDays(2), TEST_DURATION));
+        testTask1 = taskManager.createTask(new Task ("Test name","Test info", TaskStatus.NEW));
         taskManager.removeEpicById(testEpic1.getTaskId());
+
 
         assertFalse(taskManager.getPrioritizedTasks().contains(testEpic1),
                 "Epic не удален из сортировки");
@@ -228,13 +220,22 @@ class InMemoryTaskManagerTest {
         assertFalse(taskManager.getPrioritizedTasks().contains(testSubtask3),
                 "Subtask не удален из сортировки");
 
-        Assertions.assertDoesNotThrow(() -> taskManager.setTimeTask(testTask1, TEST_DATE_TIME, TEST_DURATION),
+        testTask1.setDuration(TEST_DURATION);
+        testTask1.setStartTime(TEST_DATE_TIME);
+
+        Assertions.assertDoesNotThrow(() -> taskManager.updateTask(testTask1),
                 "Слот Epic не освободился в контроле");
-        Assertions.assertDoesNotThrow(() -> taskManager.setTimeTask(testTask1,
-                        TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION),
+
+        testTask1.setDuration(TEST_DURATION);
+        testTask1.setStartTime(TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME));
+
+        Assertions.assertDoesNotThrow(() -> taskManager.updateTask(testTask1),
                 "Слот Subtask не освободился в контроле");
-        Assertions.assertDoesNotThrow(() -> taskManager.setTimeTask(testTask1,
-                        TEST_DATE_TIME.plusDays(2), TEST_DURATION),
+
+        testTask1.setDuration(TEST_DURATION);
+        testTask1.setStartTime(TEST_DATE_TIME.plusDays(2));
+
+        Assertions.assertDoesNotThrow(() -> taskManager.updateTask(testTask1),
                 "Слот Subtask не освободился в контроле");
     }
 }
