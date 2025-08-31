@@ -40,6 +40,10 @@ public class Task {
         return startTime;
     }
 
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
@@ -107,7 +111,7 @@ public class Task {
         DateTimeFormatter formatterStart = DateTimeFormatter.ofPattern("Начало: dd.MM.yy HH:mm");
         DateTimeFormatter formatterEnd = DateTimeFormatter.ofPattern("Завершение: dd.MM.yy HH:mm");
 
-        String formatDuration = duration != null ?  duration.toHours() + " часов " +
+        String formatDuration = duration != null ? duration.toHours() + " часов " +
                 duration.toMinutesPart() + " минут" : "Выполнение " + "0";
         String formatStartTime = startTime != null ? startTime.format(formatterStart) : "Не установлено";
         String formatEndTime = getEndTime() != null ? getEndTime().format(formatterEnd) : "Не установлено";

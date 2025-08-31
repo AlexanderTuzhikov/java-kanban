@@ -75,7 +75,7 @@ class FileBackedTaskManagerTest {
                         .getTaskName(),
                 "Имя Epic восстановилось не верно");
 
-        assertEquals(1, loaderManager.getAllSubtaskTask().size(), "Подзадачи не восстановились");
+        assertEquals(1, loaderManager.getAllSubtask().size(), "Подзадачи не восстановились");
         assertEquals(subtask.getType(), loaderSubtask
                 .orElseThrow(() -> new IllegalArgumentException("Subtask c ID: " + subtaskID + " не найден"))
                 .getType(), "Тип подзадачи восстановился не верно");

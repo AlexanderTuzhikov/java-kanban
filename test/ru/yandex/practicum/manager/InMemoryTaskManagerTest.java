@@ -118,10 +118,9 @@ class InMemoryTaskManagerTest {
     @Test
     void givenOverlappingTasks_whenTimeSet_thenConflictDetected() {
         //Given
-        Task testTask1;
 
         //When
-        testTask1 = taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW,
+        taskManager.createTask(new Task("Test name", "Test info", TaskStatus.NEW,
                 TEST_DATE_TIME, TEST_DURATION));
 
         //Then
@@ -154,13 +153,12 @@ class InMemoryTaskManagerTest {
     void shouldReturnTasksSortedByStartTime() {
         //Given
         Task testTask1;
-        Task testTask2;
         Task testTask3;
 
         //When
         testTask1 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
                 TEST_DATE_TIME, TEST_DURATION));
-        testTask2 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
+        taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
                 TEST_DATE_TIME.plus(TEST_CORRECT_DATE_TIME), TEST_DURATION));
         testTask3 = taskManager.createTask(new Task ("Test name", "Test info", TaskStatus.NEW,
                 TEST_DATE_TIME.plusDays(2), TEST_DURATION));

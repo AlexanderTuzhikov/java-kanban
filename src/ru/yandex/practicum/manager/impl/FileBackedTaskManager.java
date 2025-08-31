@@ -62,7 +62,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             fileBackedTaskManager.sortTaskByStartTime.add(subtask);
                         }
 
-                        subtasksForEpic.computeIfAbsent(subtask.getEpicId(), k -> new ArrayList<>())
+                        subtasksForEpic.computeIfAbsent(subtask.getEpicId(), _ -> new ArrayList<>())
                                 .add(subtask);
                     }
                 }
@@ -96,7 +96,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private void save() {
         List<Task> tasks = getAllTask();
         List<Epic> epics = getAllEpic();
-        List<Subtask> subtasks = getAllSubtaskTask();
+        List<Subtask> subtasks = getAllSubtask();
 
         String headString = "id,type,name,status,description,epic,duration,startTime,endTime";
 

@@ -53,7 +53,7 @@ class ManagersTest {
                 2));
 
         //Then
-        assertNotNull(TEST_MANAGER.getAllSubtaskTask(), "Подзадачи не добавляются");
+        assertNotNull(TEST_MANAGER.getAllSubtask(), "Подзадачи не добавляются");
 
         //When
         TEST_MANAGER.removeAllTask();
@@ -70,7 +70,7 @@ class ManagersTest {
         assertTrue(TEST_LIST_EPIC.isEmpty(), "Метод удаления Epic по ID не работает");
 
         //When
-        TEST_LIST_SUBTASK = TEST_MANAGER.getAllSubtaskTask();
+        TEST_LIST_SUBTASK = TEST_MANAGER.getAllSubtask();
         assertTrue(TEST_LIST_SUBTASK.isEmpty(), "Метод удаления Подзадач при удалении Epic не работает");
 
         //Then

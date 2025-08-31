@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Epic extends Task {
-    private final HashMap<Integer, Subtask> subtaskForEpic = new HashMap<>();
+    private HashMap<Integer, Subtask> subtaskForEpic = new HashMap<>();
     private LocalDateTime endTime;
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
 
     public Epic(String taskName, String taskInfo, TaskStatus status) {
         super(taskName, taskInfo, status);
@@ -21,29 +24,38 @@ public class Epic extends Task {
     }
 
     public void setSubtaskForEpic(int taskId, Subtask subtask) {
+        if (subtaskForEpic == null) {
+            subtaskForEpic = new HashMap<>();
+        }
         subtaskForEpic.put(taskId, subtask);
     }
 
     public void updateStartAndEndTime() {
-        Optional<LocalDateTime> minStartTime = subtaskForEpic.values().stream()
+        if (subtaskForEpic == null || subtaskForEpic.isEmpty()) {
+            startTime = null;
+            duration = null;
+            endTime = null;
+            return;
+        }
+
+        startTime = subtaskForEpic.values().stream()
                 .map(Task::getStartTime)
                 .filter(Objects::nonNull)
-                .min(LocalDateTime::compareTo);
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
 
-        minStartTime.ifPresent(value -> this.startTime = value);
 
-        Optional<LocalDateTime> maxEndTime = subtaskForEpic.values().stream()
+        endTime = subtaskForEpic.values().stream()
                 .map(Task::getEndTime)
                 .filter(Objects::nonNull)
-                .max(LocalDateTime::compareTo);
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
 
-        maxEndTime.ifPresent(value -> this.endTime = value);
 
-        this.duration = subtaskForEpic.values().stream()
+        duration = subtaskForEpic.values().stream()
                 .map(Subtask::getDuration)
                 .filter(Objects::nonNull)
                 .reduce(Duration.ZERO, Duration::plus);
-
     }
 
     @Override

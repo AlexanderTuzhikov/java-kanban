@@ -16,7 +16,6 @@ class EpicTest {
         String TEST_TASK_INFO = "TestInfo1";
 
         //When
-        int EPIC_ID = Stubs.testEpic1.getTaskId();
         String TASK_NAME = Stubs.testEpic1.getTaskName();
         String TASK_INFO = Stubs.testEpic1.getTaskInfo();
 
