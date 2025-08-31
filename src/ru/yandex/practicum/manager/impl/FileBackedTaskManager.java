@@ -62,7 +62,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             fileBackedTaskManager.sortTaskByStartTime.add(subtask);
                         }
 
-                        subtasksForEpic.computeIfAbsent(subtask.getEpicId(), _ -> new ArrayList<>())
+                        subtasksForEpic.computeIfAbsent(subtask.getEpicId(), k -> new ArrayList<>())
                                 .add(subtask);
                     }
                 }
