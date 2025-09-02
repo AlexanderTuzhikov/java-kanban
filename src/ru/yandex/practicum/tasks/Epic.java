@@ -5,21 +5,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Epic extends Task {
-    private final HashMap<Integer, Subtask> subtaskForEpic = new HashMap<>();
+    private HashMap<Integer, Subtask> subtaskForEpic = new HashMap<>();
     private LocalDateTime endTime;
 
-    public Epic(int taskId, String taskName, String taskInfo) {
-        super(taskId, taskName, taskInfo);
-        this.type = Type.EPIC;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
-    public Epic(int taskId, Type type, String taskName, TaskStatus status, String taskInfo, Duration duration,
-                LocalDateTime startTime, LocalDateTime endTime) {
-        super(taskId, type, taskName, status, taskInfo, duration, startTime);
-        this.endTime = endTime;
+    public Epic(String taskName, String taskInfo, TaskStatus status) {
+        super(taskName, taskInfo, status);
+        this.type = Type.EPIC;
     }
 
     public HashMap<Integer, Subtask> getSubtaskForEpic() {
@@ -27,29 +24,43 @@ public class Epic extends Task {
     }
 
     public void setSubtaskForEpic(int taskId, Subtask subtask) {
+        if (subtaskForEpic == null) {
+            subtaskForEpic = new HashMap<>();
+        }
         subtaskForEpic.put(taskId, subtask);
     }
 
     public void updateStartAndEndTime() {
-        Optional<LocalDateTime> minStartTime = subtaskForEpic.values().stream()
+        if (subtaskForEpic == null || subtaskForEpic.isEmpty()) {
+            startTime = null;
+            duration = null;
+            endTime = null;
+            return;
+        }
+
+        startTime = subtaskForEpic.values().stream()
                 .map(Task::getStartTime)
                 .filter(Objects::nonNull)
-                .min(LocalDateTime::compareTo);
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
 
-        minStartTime.ifPresent(value -> this.startTime = value);
 
-        Optional<LocalDateTime> maxEndTime = subtaskForEpic.values().stream()
+        endTime = subtaskForEpic.values().stream()
                 .map(Task::getEndTime)
                 .filter(Objects::nonNull)
-                .max(LocalDateTime::compareTo);
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
 
-        maxEndTime.ifPresent(value -> this.endTime = value);
 
-        this.duration = subtaskForEpic.values().stream()
+        duration = subtaskForEpic.values().stream()
                 .map(Subtask::getDuration)
                 .filter(Objects::nonNull)
                 .reduce(Duration.ZERO, Duration::plus);
+    }
 
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     @Override
@@ -69,7 +80,7 @@ public class Epic extends Task {
         DateTimeFormatter formatterStart = DateTimeFormatter.ofPattern("Начало: dd.MM.yy HH:mm");
         DateTimeFormatter formatterEnd = DateTimeFormatter.ofPattern("Завершение: dd.MM.yy HH:mm");
 
-        String formatDuration = duration != null ? "\nВыполнение: " + duration.toHours() + " часов " +
+        String formatDuration = duration != null ? duration.toHours() + " часов " +
                 duration.toMinutesPart() + " минут" : "Выполнение " + "0";
         String formatStartTime = startTime != null ? startTime.format(formatterStart) : "Не установлено";
         String formatEndTime = endTime != null ? endTime.format(formatterEnd) : "Не установлено";
@@ -97,7 +108,7 @@ public class Epic extends Task {
     }
 
     @Override
-    public String toCvs() {
+    public String toCsv() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s", getTaskId(), type, taskName, status, taskInfo, "null",
                 duration, startTime, endTime);
     }

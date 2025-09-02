@@ -3,10 +3,8 @@ package ru.yandex.practicum.manager;
 import ru.yandex.practicum.tasks.Epic;
 import ru.yandex.practicum.tasks.Subtask;
 import ru.yandex.practicum.tasks.Task;
-import ru.yandex.practicum.tasks.TaskStatus;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +14,11 @@ public interface TaskManager {
 
     List<Task> getPrioritizedTasks();
 
-    void setTimeTask(Task task, LocalDateTime startTime, Duration duration);
+    Task createTask(Task task);
 
-    Task createNewTask(String taskName, String taskInfo);
+    Subtask createSubtask(Subtask subtask);
 
-    Subtask createNewSubtask(String taskName, String taskInfo, int epicId);
-
-    Epic createNewEpic(String epicName, String epicInfo);
+    Epic createEpic(Epic epic);
 
     void putTask(Task task);
 
@@ -32,7 +28,7 @@ public interface TaskManager {
 
     ArrayList<Task> getAllTask();
 
-    ArrayList<Subtask> getAllSubtaskTask();
+    ArrayList<Subtask> getAllSubtask();
 
     ArrayList<Epic> getAllEpic();
 
@@ -44,17 +40,11 @@ public interface TaskManager {
 
     HashMap<Integer, Subtask> getAllEpicSubtask(Epic epic);
 
-    void updateTaskStatus(Task task, TaskStatus status);
+    void updateTask(Task task);
 
-    void updateTaskTime(Task task);
+    void updateSubtask(Subtask subtask);
 
-    void updateSubtaskStatus(Subtask subtask, TaskStatus status);
-
-    void updateSubtaskTime(Subtask subtask);
-
-    void updateEpicStatus(Epic epic);
-
-    void updateEpicTime(Epic epic);
+    void updateEpic(Epic epic);
 
     void removeAllTask();
 

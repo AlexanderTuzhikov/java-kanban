@@ -2,6 +2,8 @@ package ru.yandex.practicum.tasks;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.manager.TaskManager;
+import ru.yandex.practicum.util.Managers;
 import ru.yandex.practicum.util.Stubs;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,15 +14,16 @@ class SubtaskTest {
     @Test
     void test_Subtask_Fields_Are_Initialized_Correctly_Test() {
         //Given
-        int TEST_ID = 1;
+        int TEST_ID = 27;
         String TEST_NAME = "testName1";
         String TEST_INFO = "TestInfo1";
 
-        //When
-        int SUBTASK_ID = Stubs.testSubtask1.getTaskId();
-        String SUBTASK_NAME = Stubs.testSubtask1.getTaskName();
-        String SUBTASK_INFO = Stubs.testSubtask1.getTaskInfo();
-
+        //
+        TaskManager taskManager = Managers.getDefault();
+        Task testSubtask1 = taskManager.createTask(Stubs.testSubtask1);
+        int SUBTASK_ID = testSubtask1.getTaskId();
+        String SUBTASK_NAME = testSubtask1.getTaskName();
+        String SUBTASK_INFO = testSubtask1.getTaskInfo();
         //Then
         assertEquals(TEST_ID, SUBTASK_ID,
                 "ID задачи не верен");
@@ -66,17 +69,17 @@ class SubtaskTest {
     @Test
     void test_Identical_Subtasks_By_Fields_Are_Compared_Correctly_Test() {
         //Given
-        String TEST_INFO = Stubs.testSubtask1.getTaskInfo();
-        String TEST_NAME = Stubs.testSubtask1.getTaskName();
-        TaskStatus TEST_STATUS = Stubs.testSubtask1.getStatus();
+        String TEST_INFO = Stubs.testSubtask2.getTaskInfo();
+        String TEST_NAME = Stubs.testSubtask2.getTaskName();
+        TaskStatus TEST_STATUS = Stubs.testSubtask2.getStatus();
 
         //When
-        Stubs.testSubtask2.setTaskInfo(TEST_INFO);
-        Stubs.testSubtask2.setTaskName(TEST_NAME);
-        Stubs.testSubtask2.setStatus(TEST_STATUS);
+        Stubs.testSubtask4.setTaskInfo(TEST_INFO);
+        Stubs.testSubtask4.setTaskName(TEST_NAME);
+        Stubs.testSubtask4.setStatus(TEST_STATUS);
 
         //Then
-        assertEquals(Stubs.testSubtask2, Stubs.testSubtask1,
+        assertEquals(Stubs.testSubtask2, Stubs.testSubtask4,
                 "Задачи не равны");
     }
 

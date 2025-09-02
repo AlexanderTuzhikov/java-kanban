@@ -6,116 +6,126 @@ import ru.yandex.practicum.manager.TaskManager;
 import ru.yandex.practicum.tasks.*;
 import ru.yandex.practicum.util.Managers;
 
-import java.time.Duration;
+
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private HistoryManager historyManager = Managers.getDefaultHistory();
 
     protected final Map<Integer, Task> taskList = new HashMap<>();
     protected final Map<Integer, Subtask> subtaskList = new HashMap<>();
     protected final Map<Integer, Epic> epicList = new HashMap<>();
     protected final Set<Task> sortTaskByStartTime = new TreeSet<>(Comparator.comparing(Task::getStartTime)
-                    .thenComparing(Task::getTaskId));
-    protected final BitSet timeControl = new BitSet();
-
+            .thenComparing(Task::getTaskId));
+    protected final Map<LocalDateTime, Integer> timeControl = new HashMap<>();
     protected int taskId = 1;
+
+    public InMemoryTaskManager() {
+    }
+
+    public InMemoryTaskManager(InMemoryHistoryManager historyManager) {
+        this.historyManager = historyManager;
+    }
 
     @Override
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(sortTaskByStartTime);
     }
 
-    private long convertDateTimeToSlot(LocalDateTime localDateTime) {
-        Objects.requireNonNull(localDateTime, "Время не может быть null");
-        LocalDateTime baseTime = LocalDateTime.of(2025, 1, 1, 0, 0);
-
-        return ChronoUnit.MINUTES.between(baseTime, localDateTime) / 15;
-    }
-
-    private void removeFromTimeControl(Task task) {
+    public boolean isTimeConflict(Task task) {
         Objects.requireNonNull(task, "Задача не может быть null");
+        LocalDateTime start = task.getStartTime();
+        LocalDateTime end = task.getEndTime();
 
-        if (task.getStartTime() == null || task.getEndTime() == null) {
-            return;
-        }
-
-        long timeControlStart = convertDateTimeToSlot(task.getStartTime());
-        long timeControlFinish = convertDateTimeToSlot(task.getEndTime());
-
-        timeControl.clear((int) timeControlStart, (int) timeControlFinish);
-    }
-
-    private boolean isTimeConflict(Task task) {
-        Objects.requireNonNull(task, "Задача не может быть null");
-
-        if (task.getStartTime() == null || task.getEndTime() == null) {
-            return false;
-        }
-
-        long timeControlStart = convertDateTimeToSlot(task.getStartTime());
-        long timeControlFinish = convertDateTimeToSlot(task.getEndTime());
-
-        boolean isConflict = timeControl.get((int) timeControlStart, (int) timeControlFinish).cardinality() > 0;
-
-        if (!isConflict) {
-            timeControl.set((int) timeControlStart, (int) timeControlFinish);
-        }
-
-        return isConflict;
-    }
-
-    @Override
-    public void setTimeTask(Task task, LocalDateTime startTime, Duration duration) {
-        Objects.requireNonNull(task, "Задача не может быть null");
-        Objects.requireNonNull(startTime, "Время не может быть null");
-        Objects.requireNonNull(duration, "Продолжительность не может быть null");
-
-        if (task.getStartTime() != null && task.getDuration() != null) {
-            if (!task.getStartTime().isEqual(startTime) || !task.getDuration().equals(duration)) {
-                removeFromTimeControl(task);
+        for (LocalDateTime time = start; time.isBefore(end); time = time.plusMinutes(1)) {
+            Integer taskIdAtSlot = timeControl.get(time);
+            if (taskIdAtSlot != null && !taskIdAtSlot.equals(task.getTaskId())) {
+                System.out.println("Время занято задачей: ID " + taskIdAtSlot);
+                return true;
             }
         }
 
-        task.setStartTime(startTime);
-        task.setDuration(duration);
+        for (LocalDateTime time = start; time.isBefore(end); time = time.plusMinutes(1)) {
+            timeControl.put(time, task.getTaskId());
+        }
 
-        switch (task.getType()) {
-            case TASK -> updateTaskTime(task);
-            case SUBTASK -> updateSubtaskTime((Subtask) task);
+        return false;
+    }
+
+    public void removeFromTimeConflict(Task task) {
+        Objects.requireNonNull(task, "Задача не может быть null");
+        LocalDateTime start = task.getStartTime();
+        LocalDateTime end = task.getEndTime();
+
+        for (LocalDateTime time = start; time.isBefore(end); time = time.plusMinutes(1)) {
+            timeControl.remove(time);
         }
     }
 
     @Override
-    public Task createNewTask(String taskName, String taskInfo) {
+    public Task createTask(Task task) {
+        Objects.requireNonNull(task, "Задача не может быть null");
+
+        task.setType(Type.TASK);
+        task.setTaskId(taskId);
+
+        if (task.getStartTime() != null && task.getDuration() != null) {
+            boolean hasTimeConflict = isTimeConflict(task);
+
+            if (!hasTimeConflict) {
+                timeControl.put(task.getStartTime(), task.getTaskId());
+                sortTaskByStartTime.add(task);
+            } else {
+                throw new TimeConflictException("Обнаружено пересечение времени задач при добавлении:\n " + task);
+            }
+        }
+
         taskId++;
-        Task task = new Task(taskId, taskName, taskInfo);
         putTask(task);
         return task;
     }
 
     @Override
-    public Subtask createNewSubtask(String taskName, String taskInfo, int epicId) {
-        if (!epicList.containsKey(epicId)) {
-            throw new IllegalArgumentException("Эпик с ID: " + epicId + " не найден");
+    public Subtask createSubtask(Subtask subtask) {
+        Objects.requireNonNull(subtask, "Задача не может быть null");
+
+        if (!epicList.containsKey(subtask.getEpicId())) {
+            throw new IllegalArgumentException("Эпик с ID: " + subtask.getEpicId() + " не найден");
+        }
+        subtask.setType(Type.SUBTASK);
+        subtask.setTaskId(taskId);
+
+        if (subtask.getStartTime() != null && subtask.getDuration() != null) {
+            boolean hasTimeConflict = isTimeConflict(subtask);
+            if (!hasTimeConflict) {
+                timeControl.put(subtask.getStartTime(), subtask.getTaskId());
+                sortTaskByStartTime.add(subtask);
+            } else {
+                throw new TimeConflictException("Обнаружено пересечение времени задач при добавлении:\n " + subtask);
+            }
         }
 
         taskId++;
-        Subtask subtask = new Subtask(taskId, taskName, taskInfo, epicId);
         putSubtask(subtask);
+        Epic epic = epicList.get(subtask.getEpicId());
+        epic.setSubtaskForEpic(subtask.getTaskId(), subtask);
+        updateEpic(epic);
 
-        Epic epic = epicList.get(epicId);
-        epic.setSubtaskForEpic(taskId, subtask);
         return subtask;
     }
 
     @Override
-    public Epic createNewEpic(String epicName, String epicInfo) {
+    public Epic createEpic(Epic epic) {
+        Objects.requireNonNull(epic, "Epic не может быть null");
+        epic.setStartTime(null);
+        epic.setEndTime(null);
+        epic.setDuration(null);
+        epic.setType(Type.EPIC);
+        epic.setTaskId(taskId);
+
         taskId++;
-        Epic epic = new Epic(taskId, epicName, epicInfo);
         putEpic(epic);
         return epic;
     }
@@ -139,7 +149,6 @@ public class InMemoryTaskManager implements TaskManager {
         Objects.requireNonNull(epic, "Задача не может быть null");
         int id = epic.getTaskId();
         epicList.put(id, epic);
-
     }
 
     @Override
@@ -148,7 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getAllSubtaskTask() {
+    public ArrayList<Subtask> getAllSubtask() {
         return new ArrayList<>(subtaskList.values());
     }
 
@@ -189,85 +198,56 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTaskStatus(Task task, TaskStatus status) {
+    public void updateTask(Task task) {
         Objects.requireNonNull(task, "Задача не может быть null");
-        Objects.requireNonNull(status, "Статус не может быть null");
-
-        task.setStatus(status);
 
         taskList.put(task.getTaskId(), task);
-    }
 
-    @Override
-    public void updateTaskTime(Task task) {
-        Objects.requireNonNull(task, "Задача не может быть null");
+        if (task.getStartTime() != null && task.getDuration() != null) {
+            boolean hasTimeConflict = isTimeConflict(task);
 
-        if (task.getStartTime() == null || task.getEndTime() == null) {
-            taskList.put(task.getTaskId(), task);
-            return;
-        }
-
-        boolean hasTimeConflict = isTimeConflict(task);
-
-        if (!hasTimeConflict) {
-            taskList.put(task.getTaskId(), task);
-            sortTaskByStartTime.removeIf(oldTask -> oldTask.getTaskId() == task.getTaskId());
-            sortTaskByStartTime.add(task);
-        } else {
-            throw new TimeConflictException("Обнаружено пересечение времени задач при добавлении:\n " + task);
+            if (!hasTimeConflict) {
+                timeControl.put(task.getStartTime(), task.getTaskId());
+                sortTaskByStartTime.removeIf(oldTask -> oldTask.getTaskId() == task.getTaskId());
+                sortTaskByStartTime.add(task);
+            } else {
+                throw new TimeConflictException("Обнаружено пересечение времени задач при добавлении:\n " + task);
+            }
         }
     }
 
     @Override
-    public void updateSubtaskStatus(Subtask subtask, TaskStatus status) {
+    public void updateSubtask(Subtask subtask) {
         Objects.requireNonNull(subtask, "Задача не может быть null");
-        Objects.requireNonNull(status, "Статус не может быть null");
 
-        subtask.setStatus(status);
         subtaskList.put(subtask.getTaskId(), subtask);
 
+        if (subtask.getStartTime() != null && subtask.getDuration() != null) {
+            boolean hasTimeConflict = isTimeConflict(subtask);
+
+            if (!hasTimeConflict) {
+                timeControl.put(subtask.getStartTime(), subtask.getTaskId());
+                sortTaskByStartTime.removeIf(oldTask -> oldTask.getTaskId() == subtask.getTaskId());
+                sortTaskByStartTime.add(subtask);
+            } else {
+                throw new TimeConflictException("Обнаружено пересечение времени задач при добавлении:\n " + subtask);
+            }
+        }
+
         Epic epic = epicList.get(subtask.getEpicId());
-        updateEpicStatus(epic);
+        epic.setSubtaskForEpic(subtask.getTaskId(), subtask);
+        updateEpic(epic);
     }
 
     @Override
-    public void updateSubtaskTime(Subtask subtask) {
-        Objects.requireNonNull(subtask, "Задача не может быть null");
-
-        if (subtask.getStartTime() == null || subtask.getEndTime() == null) {
-            subtaskList.put(subtask.getTaskId(), subtask);
-            return;
-        }
-
-        boolean hasTimeConflict = isTimeConflict(subtask);
-
-        if (!hasTimeConflict) {
-            subtaskList.put(subtask.getTaskId(), subtask);
-
-            sortTaskByStartTime.remove(subtask);
-            sortTaskByStartTime.add(subtask);
-
-            Epic epic = epicList.get(subtask.getEpicId());
-            epic.setSubtaskForEpic(subtask.getTaskId(), subtask);
-            updateEpicTime(epic);
-        } else {
-            throw new TimeConflictException("Обнаружено пересечение времени задач при добавлении:\n " + subtask);
-        }
-
-    }
-
-    @Override
-    public void updateEpicStatus(Epic epic) {
+    public void updateEpic(Epic epic) {
         Objects.requireNonNull(epic, "Задача не может быть null");
-
         int statusDone = 0;
         int statusInProgress = 0;
-
         Map<Integer, Subtask> actualSubtask = getAllEpicSubtask(epic);
 
         if (actualSubtask.isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
-            return;
         }
 
         for (Subtask subtask : actualSubtask.values()) {
@@ -278,24 +258,15 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
-        if (statusDone == actualSubtask.size()) {
+        if (statusDone != 0 && statusDone == actualSubtask.size()) {
             epic.setStatus(TaskStatus.DONE);
-        } else if (statusInProgress > 0
-                || statusDone > 0) {
+        } else if (statusInProgress > 0 || statusDone > 0) {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         } else {
             epic.setStatus(TaskStatus.NEW);
         }
 
-        epicList.put(epic.getTaskId(), epic);
-    }
-
-    @Override
-    public void updateEpicTime(Epic epic) {
-        Objects.requireNonNull(epic, "Задача не может быть null");
-
         epic.updateStartAndEndTime();
-        epicList.put(epic.getTaskId(), epic);
 
         if (epic.getStartTime() != null && epic.getEndTime() != null) {
             sortTaskByStartTime.removeIf(oldEpic -> oldEpic.getTaskId() == epic.getTaskId());
@@ -304,31 +275,41 @@ public class InMemoryTaskManager implements TaskManager {
             sortTaskByStartTime.removeIf(oldEpic -> oldEpic.getTaskId() == epic.getTaskId());
         }
 
+        epicList.put(epic.getTaskId(), epic);
     }
 
     @Override
     public void removeAllTask() {
         for (int idTask : taskList.keySet()) {
-            sortTaskByStartTime.removeIf(task -> task.getTaskId() == idTask);
-            getTaskById(idTask).ifPresent(this::removeFromTimeControl);
-            historyManager.remove(idTask);
+            Task taskToRemove = taskList.get(idTask);
 
+            if (taskToRemove.getStartTime() != null) {
+                removeFromTimeConflict(taskToRemove);
+            }
+
+            sortTaskByStartTime.removeIf(task -> task.getTaskId() == idTask);
+            historyManager.remove(idTask);
         }
+
         taskList.clear();
     }
 
     @Override
     public void removeAllSubtask() {
         for (int idTask : subtaskList.keySet()) {
+            Subtask subtask = subtaskList.get(idTask);
+
+            if (subtask.getStartTime() != null) {
+                removeFromTimeConflict(subtask);
+            }
+
             sortTaskByStartTime.removeIf(task -> task.getTaskId() == idTask);
-            getSubtaskById(idTask).ifPresent(this::removeFromTimeControl);
             historyManager.remove(idTask);
         }
 
         for (Epic epic : epicList.values()) {
             epic.getSubtaskForEpic().clear();
-            updateEpicStatus(epic);
-            updateEpicTime(epic);
+            updateEpic(epic);
         }
 
         subtaskList.clear();
@@ -340,18 +321,21 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (int idTask : epicList.keySet()) {
             sortTaskByStartTime.removeIf(task -> task.getTaskId() == idTask);
-            getEpicById(idTask).ifPresent(this::removeFromTimeControl);
             historyManager.remove(idTask);
         }
 
         epicList.clear();
-
     }
 
     @Override
     public void removeTaskById(int id) {
+        Task taskToRemove = taskList.get(id);
+
+        if (taskToRemove.getStartTime() != null) {
+            removeFromTimeConflict(taskToRemove);
+        }
+
         sortTaskByStartTime.removeIf(task -> task.getTaskId() == id);
-        getTaskById(id).ifPresent(this::removeFromTimeControl);
         historyManager.remove(id);
         taskList.remove(id);
     }
@@ -361,33 +345,30 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask subtask = subtaskList.get(id);
         int epicId = subtask.getEpicId();
         Epic epic = epicList.get(epicId);
-
         Map<Integer, Subtask> subtasks = epic.getSubtaskForEpic();
+
         subtasks.remove(id);
-        updateEpicStatus(epic);
-        updateEpicTime(epic);
+        updateEpic(epic);
+
+        if (subtask.getStartTime() != null) {
+            removeFromTimeConflict(subtask);
+        }
 
         sortTaskByStartTime.removeIf(task -> task.getTaskId() == id);
-        getSubtaskById(id).ifPresent(this::removeFromTimeControl);
         historyManager.remove(id);
         subtaskList.remove(id);
-
     }
 
     @Override
     public void removeEpicById(int id) {
-        List<Integer> idSubtaskForRemove = subtaskList.values().stream()
-                .filter(subtask -> subtask.getEpicId() == id)
-                .map(Task::getTaskId)
-                .toList();
-        for (int idForRemove : idSubtaskForRemove) {
-            removeSubtaskById(idForRemove);
+        Epic epic = epicList.get(id);
+
+        for (Integer subtaskId : new ArrayList<>(epic.getSubtaskForEpic().keySet())) {
+            removeSubtaskById(subtaskId);
         }
 
         sortTaskByStartTime.removeIf(task -> task.getTaskId() == id);
-        getEpicById(id).ifPresent(this::removeFromTimeControl);
         historyManager.remove(id);
         epicList.remove(id);
-
     }
 }

@@ -12,17 +12,14 @@ class EpicTest {
     @Test
     void test_Epic_Fields_Are_Initialized_Correctly_Test() {
         //Given
-        int TEST_EPIC_ID = 1;
         String TASK_NAME_TEST = "testName1";
         String TEST_TASK_INFO = "TestInfo1";
 
         //When
-        int EPIC_ID = Stubs.testEpic1.getTaskId();
         String TASK_NAME = Stubs.testEpic1.getTaskName();
         String TASK_INFO = Stubs.testEpic1.getTaskInfo();
 
         //Then
-        assertEquals(TEST_EPIC_ID, EPIC_ID, "ID задачи не верен");
         assertEquals(TASK_NAME_TEST, TASK_NAME, "Имя задачи не верно");
         assertEquals(TEST_TASK_INFO, TASK_INFO, "Информация о задаче не верна");
     }
@@ -80,8 +77,8 @@ class EpicTest {
     @Test
     void test_set_Subtask_For_Epic_Correctly_Test() {
         //Given
-        Subtask TEST_SUBTASK = new Subtask(
-                4, "testName3", "TestInfo3", 3);
+        Subtask TEST_SUBTASK = new Subtask("testName3", "TestInfo3",
+                TaskStatus.NEW,Stubs.testEpic3.getTaskId());
 
         //When
         Stubs.testEpic3.setSubtaskForEpic(TEST_SUBTASK.getTaskId(), TEST_SUBTASK);

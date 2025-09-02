@@ -29,7 +29,7 @@ class InMemoryHistoryManagerTest {
     void test_History_Work_Correctly_If_Get_Task_By_Id() {
         //Given
         final int TEST_LIST_SIZE = 1;
-        Task testTask = taskManagerTest.createNewTask("Test Name", "Test Info");
+        Task testTask = taskManagerTest.createTask(new Task("Test Name", "Test Info", TaskStatus.NEW));
         int id = testTask.getTaskId();
         List<Task> testHistory;
 
@@ -47,7 +47,7 @@ class InMemoryHistoryManagerTest {
     void test_History_Work_Correctly_If_Get_Task_By_Id_Again() {
         //Given
         final int TEST_LIST_SIZE = 1;
-        Task testTask = taskManagerTest.createNewTask("Test Name", "Test Info");
+        Task testTask = taskManagerTest.createTask(new Task("Test Name", "Test Info", TaskStatus.NEW));
         int id = testTask.getTaskId();
 
         //When
@@ -65,7 +65,7 @@ class InMemoryHistoryManagerTest {
     void test_Delete_Task_From_Views() {
         //Given
         final int TEST_LIST_SIZE = 0;
-        Task testTask = taskManagerTest.createNewTask("Test Name", "Test Info");
+        Task testTask = taskManagerTest.createTask(new Task("Test Name", "Test Info", TaskStatus.NEW));
         int id = testTask.getTaskId();
 
         //When
@@ -77,14 +77,15 @@ class InMemoryHistoryManagerTest {
         assertEquals(TEST_LIST_SIZE, testHistory.size(), "История сохраняется не верно");
     }
 
-    @DisplayName("При удалении Epic удаляются и его Subtask из просмотров")
+   @DisplayName("При удалении Epic удаляются и его Subtask из просмотров")
     @Test
     void test_Delete_Epic_From_Views_And_Subtask() {
         //Given
         final int TEST_LIST_SIZE = 0;
-        Epic testEpic = taskManagerTest.createNewEpic("Test Epic", "Test Info");
+        Epic testEpic = taskManagerTest.createEpic(new Epic("Test Epic", "Test Info", TaskStatus.NEW));
         int idEpic = testEpic.getTaskId();
-        Subtask testSubtask = taskManagerTest.createNewSubtask("Test Subtask", "Test Info", idEpic);
+        Subtask testSubtask = taskManagerTest.createSubtask(new Subtask("Test Subtask", "Test Info",
+                TaskStatus.NEW, idEpic));
         int idSubtask = testSubtask.getTaskId();
 
         //When
@@ -102,8 +103,8 @@ class InMemoryHistoryManagerTest {
     void test_Viewed_Again_Task_Moves_To_The_Tail() {
         //Given
         final int TEST_LIST_SIZE = 2;
-        Epic testEpic = taskManagerTest.createNewEpic("Test Epic", "Test Info");
-        Epic testEpic2 = taskManagerTest.createNewEpic("Test Epic", "Test Info");
+        Epic testEpic = taskManagerTest.createEpic(new Epic("Test Epic", "Test Info",TaskStatus.NEW));
+        Epic testEpic2 = taskManagerTest.createEpic(new Epic("Test Epic", "Test Info",TaskStatus.NEW));
         int idEpic = testEpic.getTaskId();
         int idEpic2 = testEpic2.getTaskId();
 
@@ -114,7 +115,6 @@ class InMemoryHistoryManagerTest {
 
         //Then
         List<Task> testHistory = historyManagerTest.getHistory();
-
         assertEquals(TEST_LIST_SIZE, testHistory.size(), "История сохраняется не верно");
         assertEquals(testHistory.get(0), testEpic2, "Порядок просмотров не верен");
         assertEquals(testHistory.get(1), testEpic, "Порядок просмотров не верен");

@@ -1,87 +1,30 @@
 package ru.yandex.practicum;
 
-import ru.yandex.practicum.manager.impl.FileBackedTaskManager;
-import ru.yandex.practicum.tasks.Subtask;
-import ru.yandex.practicum.tasks.Task;
-import ru.yandex.practicum.tasks.TaskStatus;
+import ru.yandex.practicum.manager.impl.InMemoryHistoryManager;
+import ru.yandex.practicum.manager.impl.InMemoryTaskManager;
+import ru.yandex.practicum.server.HttpTaskServer;
+import ru.yandex.practicum.util.Managers;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.time.LocalDateTime;
+
 
 public class Main {
-    static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        InMemoryTaskManager taskManager = Managers.getDefault();
 
-        Path testFile = Files.createTempFile("TEST", ".csv");
+        InMemoryHistoryManager historyManager = Managers.getDefaultHistory();
 
-        FileBackedTaskManager taskManager = new FileBackedTaskManager(testFile);
+        try {
+            HttpTaskServer httpTaskServer = new HttpTaskServer(taskManager, historyManager);
+            httpTaskServer.start();
+            System.out.println("Нажмите Enter для остановки...");
 
-        //ПОЛЬЗОВАТЕЛЬСКИЙ СЦЕНАРИЙ РАБОТЫ СО ВРЕМЕНЕМ
-        //1. Создаем TASK
-        Task task = taskManager.createNewTask("Тестовая задача 1", "Тестовая информация");
-        taskManager.setTimeTask(task, LocalDateTime.of(2025, 8, 12, 16, 0),
-                Duration.ofMinutes(25));
-        // System.out.println(task); //проверяем корректность отображения
+            System.in.read();
 
-        //2. Создаем EPIC с SUBTASK
-
-        Task epic = taskManager.createNewEpic("Тестовая EPIC задача 1", "Тестовая информация");
-        int epicId = epic.getTaskId();
-
-        Subtask subtask = taskManager.createNewSubtask("Тестовая подзадача 1", "Тестовая информация",
-                epicId);
-        taskManager.setTimeTask(subtask, LocalDateTime.of(2025, 8, 13, 10, 0),
-                Duration.ofMinutes(30));
-
-        Task subtask2 = taskManager.createNewSubtask("Тестовая подзадача 2", "Тестовая информация",
-                epicId);
-        taskManager.setTimeTask(subtask2, LocalDateTime.of(2025, 8, 13, 17, 0),
-                Duration.ofMinutes(30));
-
-        Task subtask3 = taskManager.createNewSubtask("Тестовая подзадача 3", "Тестовая информация",
-                epicId);
-        taskManager.setTimeTask(subtask3, LocalDateTime.of(2025, 8, 13, 15, 0),
-                Duration.ofMinutes(30));
-        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем приоритизацию задач
-
-        //3. Меняем время у SUBTASK
-        taskManager.setTimeTask(subtask, LocalDateTime.of(2025, 8, 12, 10, 0),
-                Duration.ofMinutes(30));
-        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем изменение данных в EPIC и приоритизации
-
-        //4. Меняем статус SUBTASK
-        taskManager.updateSubtaskStatus(subtask, TaskStatus.DONE);
-        // System.out.println(taskManager.getPrioritizedTasks()); // проверяем изменение данных в EPIC
-
-        //5. Удаляем SUBTASK
-        taskManager.removeSubtaskById(subtask.getTaskId());
-        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем изменение данных в EPIC и приоритизации
-
-        //6. Удаляем EPIC
-        taskManager.removeEpicById(epicId);
-        //System.out.println(taskManager.getPrioritizedTasks()); // проверяем удаление EPIC и SUBTASK
-
-        /*7. Вызываем конфликт времени
-        Task task2 = taskManager.createNewTask("Тестовая задача 1", "Тестовая информация");
-        taskManager.setTimeTask(task2, LocalDateTime.of(2025, 8, 12, 16, 0),
-                Duration.ofMinutes(25));
-        System.out.println(taskManager.getPrioritizedTasks());*/ // ошибка
-
-        //8. Загрузка файла
-        FileBackedTaskManager loadTaskManager = FileBackedTaskManager.loadFromFile(testFile);
-
-        try (BufferedReader reader = Files.newBufferedReader(testFile)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
+            httpTaskServer.stop();
+            System.out.println("HTTP-сервер остановлен");
         } catch (IOException exception) {
-            throw new IOException("Ошибка чтения файла");
+            exception.getStackTrace();
         }
-
-        System.out.println(loadTaskManager.getAllTask());
     }
 }
