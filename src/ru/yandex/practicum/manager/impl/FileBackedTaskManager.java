@@ -12,6 +12,8 @@ import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path saveFile;
+    private int loadActualId = 1;
+    private final Map<Integer, List<Subtask>> subtasksForEpic = new HashMap<>();
 
     public FileBackedTaskManager(Path saveFile) {
         try {
@@ -24,62 +26,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public static FileBackedTaskManager loadFromFile(Path saveFile) {
+    public FileBackedTaskManager loadFromFile(Path saveFile) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(saveFile);
-        int loadActualId = 1;
 
         try (BufferedReader reader = Files.newBufferedReader(saveFile)) {
-            Map<Integer, List<Subtask>> subtasksForEpic = new HashMap<>();
-
             String line;
+
             while ((line = reader.readLine()) != null) {
+
                 if (line.isBlank() || line.startsWith("id")) {
                     continue;
                 }
+
                 Task task = fromString(line);
-
-                int taskId = task.getTaskId();
-
-                if (taskId >= loadActualId) {
-                    loadActualId = taskId + 1;
-                }
+                updateLoadId(task);
 
                 switch (task.getType()) {
-                    case TASK -> {
-                        fileBackedTaskManager.putTask(task);
-                        if (task.getStartTime() != null && task.getDuration() != null) {
-                            fileBackedTaskManager.isTimeConflict(task);
-                            fileBackedTaskManager.sortTaskByStartTime.add(task);
-                        }
-                    }
-                    case EPIC -> fileBackedTaskManager.putEpic((Epic) task);
-                    case SUBTASK -> {
-                        Subtask subtask = (Subtask) task;
-                        fileBackedTaskManager.putSubtask((Subtask) task);
-
-                        if (subtask.getStartTime() != null && subtask.getDuration() != null) {
-                            fileBackedTaskManager.isTimeConflict(subtask);
-                            fileBackedTaskManager.sortTaskByStartTime.add(subtask);
-                        }
-
-                        subtasksForEpic.computeIfAbsent(subtask.getEpicId(), k -> new ArrayList<>())
-                                .add(subtask);
-                    }
+                    case TASK -> loadTask(fileBackedTaskManager, task);
+                    case EPIC -> loadEpic(fileBackedTaskManager, task);
+                    case SUBTASK -> loadSubtask(fileBackedTaskManager, task);
                 }
             }
 
-            for (int epicId : subtasksForEpic.keySet()) {
-                Epic epic = fileBackedTaskManager.epicList.get(epicId);
-                if (epic == null) continue;
-                List<Subtask> subtasks = subtasksForEpic.get(epicId);
-
-                for (Subtask subtaskToAdd : subtasks) {
-                    int subtaskID = subtaskToAdd.getTaskId();
-                    epic.setSubtaskForEpic(subtaskID, subtaskToAdd);
-                }
-
-                fileBackedTaskManager.updateEpic(epic);
-            }
+            updateSubtaskFromEpic(fileBackedTaskManager);
 
         } catch (IOException exception) {
             throw new ManagerSaveException("Ошибка чтения файла: " + saveFile, exception);
@@ -91,6 +60,67 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void setTaskId(int id) {
         this.taskId = id;
+    }
+
+    private void loadTask(FileBackedTaskManager fileBackedTaskManager, Task task) {
+        Objects.requireNonNull(fileBackedTaskManager, "Передан пустой менеджер");
+        Objects.requireNonNull(task, "Передана пустая задача ");
+
+        fileBackedTaskManager.putTask(task);
+        if (task.getStartTime() != null && task.getDuration() != null) {
+            fileBackedTaskManager.isTimeConflict(task);
+            fileBackedTaskManager.sortTaskByStartTime.add(task);
+        }
+    }
+
+    private void loadSubtask(FileBackedTaskManager fileBackedTaskManager, Task task) {
+        Objects.requireNonNull(fileBackedTaskManager, "Передан пустой менеджер");
+        Objects.requireNonNull(task, "Передана пустая задача ");
+
+        Subtask subtask = (Subtask) task;
+
+        subtasksForEpic
+                .computeIfAbsent(subtask.getEpicId(), k -> new ArrayList<>())
+                .add(subtask);
+
+        fileBackedTaskManager.putSubtask((Subtask) task);
+
+        if (subtask.getStartTime() != null && subtask.getDuration() != null) {
+            fileBackedTaskManager.isTimeConflict(subtask);
+            fileBackedTaskManager.sortTaskByStartTime.add(subtask);
+        }
+    }
+
+    private void loadEpic(FileBackedTaskManager fileBackedTaskManager, Task task) {
+        Objects.requireNonNull(fileBackedTaskManager, "Передан пустой менеджер");
+        Objects.requireNonNull(task, "Передана пустая задача ");
+
+        fileBackedTaskManager.putEpic((Epic) task);
+
+    }
+
+    private void updateLoadId(Task task) {
+        Objects.requireNonNull(task, "Передана пустая задача ");
+
+        int taskId = task.getTaskId();
+
+        if (taskId >= loadActualId) {
+            loadActualId = taskId + 1;
+        }
+    }
+
+    private void updateSubtaskFromEpic(FileBackedTaskManager fileBackedTaskManager) {
+        for (int epicId : subtasksForEpic.keySet()) {
+            Epic epic = fileBackedTaskManager.epicList.get(epicId);
+            if (epic == null) continue;
+            List<Subtask> subtasks = subtasksForEpic.get(epicId);
+
+            for (Subtask subtaskToAdd : subtasks) {
+                int subtaskID = subtaskToAdd.getTaskId();
+                epic.setSubtaskForEpic(subtaskID, subtaskToAdd);
+            }
+            fileBackedTaskManager.updateEpic(epic);
+        }
     }
 
     private void save() {
@@ -105,19 +135,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             bufferedWriter.newLine();
 
             for (Task task : tasks) {
-                String stringTask = task.toCvs();
+                String stringTask = task.toCsv();
                 bufferedWriter.write(stringTask);
                 bufferedWriter.newLine();
             }
 
             for (Epic epic : epics) {
-                String stringEpic = epic.toCvs();
+                String stringEpic = epic.toCsv();
                 bufferedWriter.write(stringEpic);
                 bufferedWriter.newLine();
             }
 
             for (Subtask subtask : subtasks) {
-                String stringSubtask = subtask.toCvs();
+                String stringSubtask = subtask.toCsv();
                 bufferedWriter.write(stringSubtask);
                 bufferedWriter.newLine();
             }
@@ -127,7 +157,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public static Task fromString(String value) {
+    private Task fromString(String value) {
         Objects.requireNonNull(value, "Передана пустая строка");
 
         String[] strings = value.split(",");
@@ -179,7 +209,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super.createSubtask(subtask);
         save();
         return subtask;
-
     }
 
     @Override

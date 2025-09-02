@@ -14,7 +14,7 @@ class SubtaskTest {
     @Test
     void test_Subtask_Fields_Are_Initialized_Correctly_Test() {
         //Given
-        int TEST_ID = 24;
+        int TEST_ID = 27;
         String TEST_NAME = "testName1";
         String TEST_INFO = "TestInfo1";
 

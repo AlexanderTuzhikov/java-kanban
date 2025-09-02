@@ -75,7 +75,6 @@ class TaskHttpHandlerTest {
         assertEquals(200, response.statusCode());
 
         List<Task> tasksFromManager = taskManager.getAllTask();
-        System.out.println(tasksFromManager);
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
         assertEquals("Test task", tasksFromManager.getFirst().getTaskName(), "Некорректное имя задачи");

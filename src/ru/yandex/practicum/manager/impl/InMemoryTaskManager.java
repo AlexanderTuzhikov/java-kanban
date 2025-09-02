@@ -35,12 +35,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public boolean isTimeConflict(Task task) {
+        Objects.requireNonNull(task, "Задача не может быть null");
         LocalDateTime start = task.getStartTime();
         LocalDateTime end = task.getEndTime();
 
         for (LocalDateTime time = start; time.isBefore(end); time = time.plusMinutes(1)) {
             Integer taskIdAtSlot = timeControl.get(time);
             if (taskIdAtSlot != null && !taskIdAtSlot.equals(task.getTaskId())) {
+                System.out.println("Время занято задачей: ID " + taskIdAtSlot);
                 return true;
             }
         }
@@ -53,6 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void removeFromTimeConflict(Task task) {
+        Objects.requireNonNull(task, "Задача не может быть null");
         LocalDateTime start = task.getStartTime();
         LocalDateTime end = task.getEndTime();
 
@@ -67,10 +70,10 @@ public class InMemoryTaskManager implements TaskManager {
 
         task.setType(Type.TASK);
         task.setTaskId(taskId);
-        taskId++;
 
         if (task.getStartTime() != null && task.getDuration() != null) {
             boolean hasTimeConflict = isTimeConflict(task);
+
             if (!hasTimeConflict) {
                 timeControl.put(task.getStartTime(), task.getTaskId());
                 sortTaskByStartTime.add(task);
@@ -79,6 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
+        taskId++;
         putTask(task);
         return task;
     }
@@ -92,7 +96,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subtask.setType(Type.SUBTASK);
         subtask.setTaskId(taskId);
-        taskId++;
 
         if (subtask.getStartTime() != null && subtask.getDuration() != null) {
             boolean hasTimeConflict = isTimeConflict(subtask);
@@ -104,6 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
+        taskId++;
         putSubtask(subtask);
         Epic epic = epicList.get(subtask.getEpicId());
         epic.setSubtaskForEpic(subtask.getTaskId(), subtask);
@@ -114,11 +118,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic createEpic(Epic epic) {
+        Objects.requireNonNull(epic, "Epic не может быть null");
         epic.setStartTime(null);
         epic.setEndTime(null);
         epic.setDuration(null);
         epic.setType(Type.EPIC);
         epic.setTaskId(taskId);
+
         taskId++;
         putEpic(epic);
         return epic;
@@ -143,7 +149,6 @@ public class InMemoryTaskManager implements TaskManager {
         Objects.requireNonNull(epic, "Задача не может быть null");
         int id = epic.getTaskId();
         epicList.put(id, epic);
-
     }
 
     @Override
@@ -237,10 +242,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic epic) {
         Objects.requireNonNull(epic, "Задача не может быть null");
-
         int statusDone = 0;
         int statusInProgress = 0;
-
         Map<Integer, Subtask> actualSubtask = getAllEpicSubtask(epic);
 
         if (actualSubtask.isEmpty()) {
@@ -286,8 +289,8 @@ public class InMemoryTaskManager implements TaskManager {
 
             sortTaskByStartTime.removeIf(task -> task.getTaskId() == idTask);
             historyManager.remove(idTask);
-
         }
+
         taskList.clear();
     }
 
@@ -322,7 +325,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         epicList.clear();
-
     }
 
     @Override
@@ -343,8 +345,8 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask subtask = subtaskList.get(id);
         int epicId = subtask.getEpicId();
         Epic epic = epicList.get(epicId);
-
         Map<Integer, Subtask> subtasks = epic.getSubtaskForEpic();
+
         subtasks.remove(id);
         updateEpic(epic);
 
@@ -368,6 +370,5 @@ public class InMemoryTaskManager implements TaskManager {
         sortTaskByStartTime.removeIf(task -> task.getTaskId() == id);
         historyManager.remove(id);
         epicList.remove(id);
-
     }
 }

@@ -44,7 +44,7 @@ class ManagersTest {
 
         //When
         Optional<Epic> epic = TEST_MANAGER.getEpicById(2);
-        System.out.println(TEST_MANAGER.getAllEpic());
+
         //Then
         assertEquals(2, epic.map(Epic::getTaskId).orElseThrow(), "Метод получения ID задачи не работает");
 

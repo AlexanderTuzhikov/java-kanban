@@ -59,6 +59,11 @@ public class Epic extends Task {
     }
 
     @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Epic epic)) return false;
         if (!super.equals(o)) return false;
@@ -103,7 +108,7 @@ public class Epic extends Task {
     }
 
     @Override
-    public String toCvs() {
+    public String toCsv() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s", getTaskId(), type, taskName, status, taskInfo, "null",
                 duration, startTime, endTime);
     }

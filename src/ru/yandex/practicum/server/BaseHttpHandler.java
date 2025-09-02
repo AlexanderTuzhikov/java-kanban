@@ -40,6 +40,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+        Objects.requireNonNull(httpExchange, "HttpExchange не может быть null");
         String method = httpExchange.getRequestMethod();
         URI uri = httpExchange.getRequestURI();
         String[] splitPath = httpExchange.getRequestURI().getPath().split("/");

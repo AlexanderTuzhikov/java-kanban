@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
     @Override
@@ -19,6 +20,7 @@ public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
 
     @Override
     public LocalDateTime read(final JsonReader jsonReader) throws IOException {
+        Objects.requireNonNull(jsonReader, "JsonReader не может быть null");
         String value = jsonReader.nextString();
         return value == null ? null : LocalDateTime.parse(value);
     }

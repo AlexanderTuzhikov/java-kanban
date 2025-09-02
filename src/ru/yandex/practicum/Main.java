@@ -2,14 +2,14 @@ package ru.yandex.practicum;
 
 import ru.yandex.practicum.manager.impl.InMemoryHistoryManager;
 import ru.yandex.practicum.manager.impl.InMemoryTaskManager;
-
 import ru.yandex.practicum.server.HttpTaskServer;
 import ru.yandex.practicum.util.Managers;
 
 import java.io.IOException;
 
+
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         InMemoryTaskManager taskManager = Managers.getDefault();
 
         InMemoryHistoryManager historyManager = Managers.getDefaultHistory();

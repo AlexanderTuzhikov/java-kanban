@@ -7,6 +7,7 @@ import ru.yandex.practicum.manager.impl.InMemoryTaskManager;
 import ru.yandex.practicum.tasks.Subtask;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class SubtaskHttpHandler extends BaseHttpHandler {
 
@@ -16,6 +17,9 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
 
     @Override
     protected void handleGet(HttpExchange httpExchange, String[] splitPath) throws IOException {
+        Objects.requireNonNull(httpExchange, "HttpExchange не может быть null");
+        Objects.requireNonNull(splitPath, "SplitPath не может быть null");
+
         if (splitPath.length == 3) {
             try {
                 int id = Integer.parseInt(splitPath[2]);
@@ -37,6 +41,8 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
 
     @Override
     protected void handlePost(HttpExchange httpExchange, String bodyText) throws IOException {
+        Objects.requireNonNull(httpExchange, "HttpExchange не может быть null");
+
         String contentType = httpExchange.getRequestHeaders().getFirst("Content-Type");
 
         if (contentType == null || !contentType.contains("application/json")) {
@@ -69,6 +75,9 @@ public class SubtaskHttpHandler extends BaseHttpHandler {
 
     @Override
     protected void handleDelete(HttpExchange httpExchange, String[] splitPath) throws IOException {
+        Objects.requireNonNull(httpExchange, "HttpExchange не может быть null");
+        Objects.requireNonNull(splitPath, "SplitPath не может быть null");
+
         try {
             if (splitPath.length == 3) {
                 int id = Integer.parseInt(splitPath[2]);

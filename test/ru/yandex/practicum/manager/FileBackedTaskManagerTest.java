@@ -47,7 +47,7 @@ class FileBackedTaskManagerTest {
         int subtaskID = subtask.getTaskId();
 
         //When
-        FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
+        FileBackedTaskManager loaderManager = taskManager.loadFromFile(testFile);
 
         Optional<Task> loaderTask = loaderManager.getTaskById(taskID);
         Optional<Epic> loaderEpic = loaderManager.getEpicById(epicID);
@@ -129,7 +129,7 @@ class FileBackedTaskManagerTest {
         subtask6.setStatus(TaskStatus.DONE);
         taskManager.updateSubtask(subtask6);
 
-        FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
+        FileBackedTaskManager loaderManager = taskManager.loadFromFile(testFile);
         Epic loaderEpic = loaderManager.getEpicById(epicID)
                 .orElseThrow(() -> new IllegalArgumentException("Epic c ID: " + epicID + " не найден"));
         Epic loaderEpic2 = loaderManager.getEpicById(epicID2)
@@ -160,7 +160,7 @@ class FileBackedTaskManagerTest {
 
 
         //When
-        FileBackedTaskManager loaderManager = FileBackedTaskManager.loadFromFile(testFile);
+        FileBackedTaskManager loaderManager = taskManager.loadFromFile(testFile);
 
         //Then
         assertTrue(loaderManager.getPrioritizedTasks().contains(task), "Задача не восстановилась в сортировке");

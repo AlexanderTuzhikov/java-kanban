@@ -3,7 +3,6 @@ package ru.yandex.practicum.util;
 import ru.yandex.practicum.exceptions.ManagerSaveException;
 import ru.yandex.practicum.manager.impl.FileBackedTaskManager;
 import ru.yandex.practicum.manager.impl.InMemoryHistoryManager;
-import ru.yandex.practicum.manager.impl.InMemoryTaskManager;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,12 +23,13 @@ public class Managers {
     }
 
     private static final InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    private static final FileBackedTaskManager taskManager = new FileBackedTaskManager(SAVE_FILE);
 
     private Managers() {
     }
 
-    public static InMemoryTaskManager getDefault() {
-        return FileBackedTaskManager.loadFromFile(SAVE_FILE);
+    public static FileBackedTaskManager getDefault() {
+        return taskManager;
     }
 
     public static InMemoryHistoryManager getDefaultHistory() {

@@ -5,6 +5,7 @@ import ru.yandex.practicum.manager.HistoryManager;
 import ru.yandex.practicum.manager.impl.InMemoryTaskManager;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class PrioritizedHttpHandler extends BaseHttpHandler {
 
@@ -23,12 +24,16 @@ public class PrioritizedHttpHandler extends BaseHttpHandler {
 
     @Override
     protected void handlePost(HttpExchange httpExchange, String bodyText) throws IOException {
+        Objects.requireNonNull(httpExchange, "HttpExchange не может быть null");
+
         String method = httpExchange.getRequestMethod();
         sendNotFound(httpExchange, "Command " + method + " not found");
     }
 
     @Override
     protected void handleDelete(HttpExchange httpExchange, String[] splitPath) throws IOException {
+        Objects.requireNonNull(httpExchange, "HttpExchange не может быть null");
+
         String method = httpExchange.getRequestMethod();
         sendNotFound(httpExchange, "Command " + method + " not found");
     }

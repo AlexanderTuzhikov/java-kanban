@@ -147,7 +147,6 @@ class HistoryHttpHandlerTest {
         assertEquals(200, response.statusCode());
         assertEquals(2, historyManager.getHistory().size(), "Subtask не добавился в History");
         sendDelete("subtask/" + subtaskId);
-        System.out.println(historyManager.getHistory());
         assertEquals(1, historyManager.getHistory().size(), "Subtask не удалился в History");
     }
 }

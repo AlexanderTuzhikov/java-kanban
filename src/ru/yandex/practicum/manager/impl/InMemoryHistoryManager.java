@@ -15,7 +15,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         Objects.requireNonNull(task, "Задача не может быть null");
-
         int id = task.getTaskId();
 
         if (history.containsKey(id)) {
@@ -27,7 +26,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private void linkLast(Task task) {
         Objects.requireNonNull(task, "Задача не может быть null");
-
         Integer id = task.getTaskId();
 
         if (tail == null) {
@@ -81,7 +79,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         node.setPrevNode(null);
         node.setNextNode(null);
-
     }
 
     @Override
@@ -95,5 +92,4 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
         return showHistory;
     }
-
 }
